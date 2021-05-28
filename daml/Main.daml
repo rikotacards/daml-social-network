@@ -1,0 +1,52 @@
+module Main where
+import Daml.Script
+
+import TokenArt
+import User
+
+setup : Script ()
+setup = script do
+  alice <- allocatePartyWithHint "Alice" (PartyIdHint "Alice")
+  max <- allocatePartyWithHint "Max" (PartyIdHint "Max")
+
+  -- reader party allows for contracts to be readable by all
+  reader <- allocatePartyWithHint "Reader" (PartyIdHint "Reader")
+
+  maxUser <- submit max do
+    createCmd User
+      with
+        username = max
+        following = []
+        followers = []
+        reader = reader
+        influence = 0.0
+  
+  aliceUser <- submit alice do
+    createCmd User
+      with
+        username = alice
+        following = []
+        followers = []
+        reader = reader
+        influence = 0.0
+
+  token <- submit alice do
+    exerciseCmd aliceUser MintToken
+      with
+        initialPrice = 100.00
+        image = "text"
+        royaltyRate = 0.05
+
+  aliceTokenOffer <- submit alice do
+    exerciseCmd token Offer
+      with 
+        reader = reader
+        price = 100.0
+
+  maxToken <- submitMulti [max] [reader] do
+    exerciseCmd aliceTokenOffer AcceptOffer
+      with
+        acceptingOwner = max
+
+
+  return ()

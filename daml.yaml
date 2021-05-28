@@ -1,0 +1,21 @@
+sdk-version: 1.13.1
+name: daml-social-network
+version: 0.1.0
+source: daml
+parties:
+- Alice
+- Bob
+- Charlie
+- Max
+dependencies:
+- daml-prim
+- daml-stdlib
+- daml-trigger
+sandbox-options:
+- --wall-clock-time
+- --ledgerid=daml-social-network-sandbox
+start-navigator: true
+codegen:
+  js:
+    output-directory: ui/daml.js
+    npm-scope: daml.js

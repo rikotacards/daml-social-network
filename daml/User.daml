@@ -1,0 +1,45 @@
+-- Copyright (c) 2021 Digital Asset (Switzerland) GmbH and/or its affiliates. All rights reserved.
+-- SPDX-License-Identifier: Apache-2.0
+
+module User where
+import TokenArt
+
+template User with
+    username: Party
+    following: [Party]
+    followers: [Party]
+    reader: Party
+    influence: Decimal
+    
+  where 
+    signatory username
+    observer reader
+
+    key username: Party
+    maintainer key
+  
+    controller username can
+      nonconsuming  MintToken: ContractId TokenArt
+        with
+          initialPrice: Decimal
+          image: Text
+          royaltyRate: Decimal
+        do
+          issuedAt <- getTime
+          create TokenArt
+            with
+              lastPrice = initialPrice
+              owner = username
+              issuer = username
+              ..
+     
+
+
+
+
+
+
+
+
+
+    

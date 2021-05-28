@@ -1,0 +1,64 @@
+module TokenArt where
+
+template TokenArt with
+    issuer: Party
+    owner: Party
+    lastPrice: Decimal
+    issuedAt: Time
+    image: Text
+    royaltyRate: Decimal
+  where 
+    signatory issuer
+
+    key (issuer, owner, image): (Party, Party, Text)
+    maintainer key._2
+
+    controller owner can
+      nonconsuming Offer: ContractId TokenOffer
+        with
+          reader: Party
+          price: Decimal 
+
+        do 
+          create TokenOffer with ..
+
+      RemoveOffer: ()
+        do
+          return ()
+
+-- Offer represented in gallery  
+template TokenOffer with
+    issuer: Party
+    reader: Party
+    owner: Party
+    price: Decimal
+    issuedAt: Time
+    image: Text
+    royaltyRate: Decimal
+    lastPrice: Decimal
+
+  where 
+    signatory issuer, owner
+    observer reader
+    key (issuer, owner, image): (Party, Party, Text)
+    maintainer key._2
+
+    controller owner can
+      CancelOffer: ()
+        do
+          return ()
+
+    choice AcceptOffer: ContractId TokenArt
+      with 
+        acceptingOwner: Party
+      controller acceptingOwner
+      do
+       create TokenArt with
+          owner = acceptingOwner
+          lastPrice = price
+          ..
+
+
+
+
+      
