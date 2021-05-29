@@ -18,7 +18,11 @@ type Props = {
 };
 
 const useStyles = makeStyles(theme => ({
-  offset: theme.mixins.toolbar
+  offset: theme.mixins.toolbar,
+  button: {
+    marginLeft: "auto",
+    marginRight: theme.spacing(1)
+  }
 }));
 
 /**
@@ -31,9 +35,15 @@ export const MainScreen: React.FC<Props> = ({ onLogout }) => {
       <div className={classes.offset} />
       <AppBar position="fixed">
         <Toolbar>
-          <Button variant='contained' onClick={onLogout}>Logout</Button>
-          You are logged in as {useParty()}.
-
+          <Typography>Daml Doodle</Typography>
+          <Button
+            className={classes.button}
+            size="small"
+            variant="contained"
+            onClick={onLogout}
+          >
+            Logout
+          </Button>
         </Toolbar>
       </AppBar>
       <HomePage />

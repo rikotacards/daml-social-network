@@ -10,7 +10,7 @@ import {
   useStreamFetchByKeys,
   useStreamQueries
 } from "@daml/react";
-import { Typography } from "@material-ui/core";
+import { Typography, Tabs, Tab } from "@material-ui/core";
 import { AddArt } from "./AddArt";
 import { OwnArt } from "./OwnArt";
 import { Offers } from "./Offers";
@@ -27,19 +27,36 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const HomePage: React.FC = () => {
   const username = useParty();
   const classes = useStyles()
+  const [value, setValue] = React.useState(0);
+
   const myUserResult = useStreamFetchByKeys(User.User, () => [username], [
     username
   ]);
   const myUser = myUserResult.contracts[0]?.payload;
   const allUsers = useStreamQueries(User.User).contracts;
   console.log("myUser", myUser);
+
+  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setValue(newValue);
+  };
   return (
     <div className={classes.root}>
       <Typography>{myUser?.username}</Typography>
       <Typography>{myUser?.influence}</Typography>
       <AddArt/>
-      <OwnArt/>
-      <Offers/>
+      <Tabs
+        value={value}
+        indicatorColor="primary"
+        textColor="primary"
+        onChange={handleChange}
+        aria-label="disabled tabs example"
+      >
+        <Tab label="My Art" />
+        <Tab label="Market" />
+       </Tabs>
+        {value === 0 && (<OwnArt/>)}
+        {value === 1 &&  (<Offers/>)}
+
     </div>
   );
 };

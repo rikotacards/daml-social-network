@@ -1,5 +1,5 @@
 import React from "react";
-import { Theme, makeStyles, Button, InputBase } from "@material-ui/core";
+import { Theme, makeStyles, Button, InputBase, Card } from "@material-ui/core";
 import {
   useParty,
   useLedger,
@@ -11,6 +11,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexDirection: "column"
+  },
+  card: {
+    margin: theme.spacing(1),
+    padding: theme.spacing(1)
   },
   writeContainer: {
     display: "flex"
@@ -34,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderColor: theme.palette.divider,
     alignItems: "center",
     justifyContent: "center",
-    margin: theme.spacing(0, 1),
+    margin: theme.spacing(1,1,1,0),
     borderRadius: theme.shape.borderRadius,
     position: "relative"
   },
@@ -60,10 +64,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   addRow: {
     margin: theme.spacing(1)
   },
-  card: {
-    padding: theme.spacing(1),
-    marginBottom: theme.spacing(1)
-  },
+ 
   input: {
     display: "none",
     position: "absolute"
@@ -99,12 +100,15 @@ export const AddArt: React.FC = () => {
 
   const addArt = async () => {
     try {
-      console.log("click", imageString);
       await ledger.exerciseByKey(User.User.MintToken, username, {
-        initialPrice: "100.00",
+        initialPrice: text,
         image: imageString,
         royaltyRate: "0.05"
       });
+      setImageString("")
+      setText("")
+      var image = document.getElementById(`${formIndex}`) as HTMLImageElement;
+      image.src = "data:,"
     } catch (e) {
       alert("error");
     }
@@ -142,7 +146,7 @@ export const AddArt: React.FC = () => {
   const formIndex = "1";
   const myUser = myUserResult.contracts[0]?.payload;
   return (
-    <>
+    <Card className={classes.card}>
       <div className={classes.writeContainer}>
         <div className={classes.uploadImageButton}>
           <input
@@ -158,18 +162,18 @@ export const AddArt: React.FC = () => {
               className={classes.label}
               htmlFor={`${formIndex}contained-button-file`}
             >
-              upload
+              {'upload'}
             </label>
           }
-          <img
-            //   alt={selectedValue || ""}
+         <img
+              alt=''
             id={`${formIndex}`}
             className={classes.image}
           />
         </div>
         <InputBase
           className={classes.textField}
-          placeholder="Leave a review"
+          placeholder={`Set price, eg "100.0"`}
           multiline
           rows={3}
           inputProps={{ "aria-label": "naked" }}
@@ -178,9 +182,9 @@ export const AddArt: React.FC = () => {
           id={`${formIndex}`}
         />
       </div>
-      <Button variant="contained" onClick={addArt}>
+      <Button disabled={!imageString.length} size='small' variant="contained" onClick={addArt}>
         add
       </Button>
-    </>
+    </Card>
   );
 };

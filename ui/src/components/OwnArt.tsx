@@ -10,6 +10,7 @@ import {
 import { Typography, makeStyles } from "@material-ui/core";
 import { ArtItem } from "./ArtItem";
 import { Grid, Card } from "@material-ui/core";
+import { isMobile } from "../platform/platform";
 
 export const OwnArt: React.FC = () => {
   const username = useParty();
@@ -33,7 +34,7 @@ export const OwnArt: React.FC = () => {
   }
 
   const artDisplay = myArt.map(art => (
-    <Grid item xs={4}>
+    <Grid item xs={isMobile() ? 12 :4}>
       <ArtItem
         issuer={art.payload.issuer}
         owner={art.payload.owner}
@@ -43,10 +44,8 @@ export const OwnArt: React.FC = () => {
       />
     </Grid>
   ));
-  console.log("mydArt", myArt);
   return (
     <div>
-      <Typography variant='body2'>My Art</Typography>
       <Grid container>{artDisplay}</Grid>
     </div>
   );
