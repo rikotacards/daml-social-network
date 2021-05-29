@@ -36,6 +36,7 @@ export const OwnArt: React.FC = () => {
         image={art.payload.image}
         issuedAt={art.payload.issuedAt}
         contractId={art.contractId}
+        key={art.contractId}
       />
   ));
   console.log("mydArt", myArt);

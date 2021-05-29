@@ -35,6 +35,7 @@ export const ArtItem: React.FC<ArtItemProps> = ({
   //   const username = useParty();
   const ledger = useLedger();
   const classes = useStyles();
+  console.log('contractID', contractId)
   const onOfferClick = async () => {
     try {
       await ledger.exercise(TokenArt.TokenArt.Offer, contractId, {

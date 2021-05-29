@@ -20,6 +20,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   root: {
     padding: theme.spacing(1),
     margin: theme.spacing(1)
+  },
+  image: {
+      width: '100%'
   }
 }));
 
@@ -28,12 +31,14 @@ interface OfferItemProps {
   issuer: string;
   image: string;
   contractId: ContractId<TokenArt.TokenOffer>;
+  price: string;
 }
 export const OfferItem: React.FC<OfferItemProps> = ({
   contractId,
   issuer,
   image,
-  owner
+  owner,
+  price
 }) => {
   const classes = useStyles();
   const ledger = useLedger();
@@ -50,10 +55,18 @@ export const OfferItem: React.FC<OfferItemProps> = ({
   };
   return (
     <Card className={classes.root}>
-      <CardMedia image={""} />
+      <img className={classes.image} src={image}/>
+      <div>
+        <Typography>creator:</Typography>
+        <Typography variant="caption">{issuer}</Typography>
+      </div>
       <div>
         <Typography>owner:</Typography>
         <Typography variant="caption">{owner}</Typography>
+      </div>
+      <div>
+        <Typography>price:</Typography>
+        <Typography variant="caption">{price}</Typography>
       </div>
       <div>
         <Button onClick={onClick} color="green">Buy</Button>

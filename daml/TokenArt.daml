@@ -43,7 +43,6 @@ template TokenOffer with
 
     controller owner can
       
-
     choice AcceptOffer: ContractId TokenArt
       with 
         acceptingOwner: Party

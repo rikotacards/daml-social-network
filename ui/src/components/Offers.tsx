@@ -6,7 +6,7 @@ import {
   useStreamQueries
 } from "@daml/react";
 import { TokenArt } from "@daml.js/daml-social-network";
-import { Card, Theme, makeStyles, Typography } from "@material-ui/core";
+import { Card, Theme, makeStyles, Typography, Grid } from "@material-ui/core";
 import { OfferItem } from "./OfferItem";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -20,12 +20,15 @@ export const Offers: React.FC = () => {
   console.log("tokenOffers", tokenOffers);
   const offerDisplay = tokenOffers.map(offer => {
     return (
+        <Grid item xs={4}>
       <OfferItem
         owner={offer.payload.owner}
         issuer={offer.payload.issuer}
         image={offer.payload.image}
         contractId={offer.contractId}
+        price={offer.payload.price}
       />
+      </Grid>
     );
   });
   if (!tokenOffers?.length) {
@@ -38,7 +41,10 @@ export const Offers: React.FC = () => {
   return (
     <div>
       <Typography>Offers</Typography>
+      <Grid>
+
       {offerDisplay}
+      </Grid>
     </div>
   );
 };

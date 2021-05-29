@@ -119,3 +119,7 @@ TBD
 ## How to get help
 
 TBD
+
+
+## Notes
+- when making changes to `.daml` files, must run `daml build` to reflect those changes in UI, due to changes in binding. 
