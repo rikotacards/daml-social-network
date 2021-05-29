@@ -14,10 +14,19 @@ import { Typography } from "@material-ui/core";
 import { AddArt } from "./AddArt";
 import { OwnArt } from "./OwnArt";
 import { Offers } from "./Offers";
+import {makeStyles, Theme} from '@material-ui/core';
+
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column'
+  }
+}))
 
 // USERS_BEGIN
 export const HomePage: React.FC = () => {
   const username = useParty();
+  const classes = useStyles()
   const myUserResult = useStreamFetchByKeys(User.User, () => [username], [
     username
   ]);
@@ -25,7 +34,7 @@ export const HomePage: React.FC = () => {
   const allUsers = useStreamQueries(User.User).contracts;
   console.log("myUser", myUser);
   return (
-    <div>
+    <div className={classes.root}>
       <Typography>{myUser?.username}</Typography>
       <Typography>{myUser?.influence}</Typography>
       <AddArt/>

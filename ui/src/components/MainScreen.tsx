@@ -32,6 +32,8 @@ export const MainScreen: React.FC<Props> = ({ onLogout }) => {
       <AppBar position="fixed">
         <Toolbar>
           <Button variant='contained' onClick={onLogout}>Logout</Button>
+          You are logged in as {useParty()}.
+
         </Toolbar>
       </AppBar>
       <HomePage />

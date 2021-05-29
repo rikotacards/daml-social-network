@@ -57,19 +57,19 @@ export const OfferItem: React.FC<OfferItemProps> = ({
     <Card className={classes.root}>
       <img className={classes.image} src={image}/>
       <div>
-        <Typography>creator:</Typography>
+        <Typography variant="caption">creator:</Typography>
         <Typography variant="caption">{issuer}</Typography>
       </div>
       <div>
-        <Typography>owner:</Typography>
+        <Typography variant="caption">owner:</Typography>
         <Typography variant="caption">{owner}</Typography>
       </div>
       <div>
-        <Typography>price:</Typography>
+        <Typography variant="caption">price:</Typography>
         <Typography variant="caption">{price}</Typography>
       </div>
       <div>
-        <Button onClick={onClick} color="green">Buy</Button>
+        <Button size='small' onClick={onClick} color="green">Buy</Button>
       </div>
     </Card>
   );

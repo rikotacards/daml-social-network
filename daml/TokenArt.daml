@@ -42,6 +42,9 @@ template TokenOffer with
     maintainer key._2
 
     controller owner can
+      ArchiveOffer: ()
+        do
+          return ()
       
     choice AcceptOffer: ContractId TokenArt
       with 
@@ -52,6 +55,8 @@ template TokenOffer with
           owner = acceptingOwner
           lastPrice = price
           ..
+    
+
 
 
 
