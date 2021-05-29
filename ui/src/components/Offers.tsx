@@ -8,6 +8,7 @@ import {
 import { TokenArt } from "@daml.js/daml-social-network";
 import { Card, Theme, makeStyles, Typography, Grid } from "@material-ui/core";
 import { OfferItem } from "./OfferItem";
+import { isMobile } from "../platform/platform";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -20,14 +21,14 @@ export const Offers: React.FC = () => {
   console.log("tokenOffers", tokenOffers);
   const offerDisplay = tokenOffers.map(offer => {
     return (
-        <Grid item xs={4}>
-      <OfferItem
-        owner={offer.payload.owner}
-        issuer={offer.payload.issuer}
-        image={offer.payload.image}
-        contractId={offer.contractId}
-        price={offer.payload.price}
-      />
+      <Grid item xs={ isMobile() ? 12 : 4}>
+        <OfferItem
+          owner={offer.payload.owner}
+          issuer={offer.payload.issuer}
+          image={offer.payload.image}
+          contractId={offer.contractId}
+          price={offer.payload.price}
+        />
       </Grid>
     );
   });
@@ -41,10 +42,7 @@ export const Offers: React.FC = () => {
   return (
     <div>
       <Typography>Offers</Typography>
-      <Grid>
-
-      {offerDisplay}
-      </Grid>
+      <Grid container>{offerDisplay}</Grid>
     </div>
   );
 };
