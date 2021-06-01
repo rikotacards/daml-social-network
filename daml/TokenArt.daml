@@ -1,4 +1,5 @@
 module TokenArt where
+import Payment
 
 template TokenArt with
     issuer: Party
@@ -40,6 +41,7 @@ template TokenOffer with
     observer reader
     key (issuer, owner, image): (Party, Party, Text)
     maintainer key._2
+    ensure price >= 0.0
 
     controller owner can
       ArchiveOffer: ()
@@ -49,9 +51,12 @@ template TokenOffer with
     choice AcceptOffer: ContractId TokenArt
       with 
         acceptingOwner: Party
+        receivingAccount: ContractId Balance
       controller acceptingOwner
       do
-       create TokenArt with
+        
+
+        create TokenArt with
           owner = acceptingOwner
           lastPrice = price
           ..

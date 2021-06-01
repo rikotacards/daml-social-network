@@ -3,6 +3,7 @@ import Daml.Script
 
 import TokenArt
 import User
+import Payment
 
 setup : Script ()
 setup = script do
@@ -21,6 +22,13 @@ setup = script do
         followers = []
         reader = reader
         influence = 0.0
+  
+  aliceBank <- submit alice do 
+    createCmd Balance 
+      with
+        username = alice
+        amount= 0.0
+        currency = "USD"
   
   aliceUser <- submit alice do
     createCmd User
