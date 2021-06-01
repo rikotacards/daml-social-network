@@ -39,7 +39,6 @@ export const ArtItem: React.FC<ArtItemProps> = ({
   //   const username = useParty();
   const ledger = useLedger();
   const classes = useStyles();
-  console.log('contractID', contractId)
 
   const onCancelClick = async() => {
     try {

@@ -1,6 +1,5 @@
 module TokenArt where
-import Payment
-
+import Iou
 template TokenArt with
     issuer: Party
     owner: Party
@@ -21,6 +20,7 @@ template TokenArt with
           price: Decimal 
 
         do 
+         
           create TokenOffer with ..
 
    
@@ -48,18 +48,25 @@ template TokenOffer with
         do
           return ()
       
-    choice AcceptOffer: ContractId TokenArt
+    choice AcceptOffer: (ContractId TokenArt, ContractId IouTransfer)
       with 
         acceptingOwner: Party
-        receivingAccount: ContractId Balance
+        iouCid: ContractId Iou
       controller acceptingOwner
       do
+        (splitCid, restCid) <- exercise iouCid Iou_Split with
+          splitAmount = price
         
+        iouTransferCid <- exercise splitCid Iou_Transfer with
+          newOwner = owner
 
-        create TokenArt with
+        
+        -- TODO this creates two contracts
+        tokenWithNewOwner <- create TokenArt with
           owner = acceptingOwner
           lastPrice = price
           ..
+        return (tokenWithNewOwner, iouTransferCid)
     
 
 

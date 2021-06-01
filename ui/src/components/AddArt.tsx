@@ -6,7 +6,7 @@ import {
   useStreamFetchByKeys,
   useStreamQueries
 } from "@daml/react";
-import { User } from "@daml.js/daml-social-network";
+import { User, Iou } from "@daml.js/daml-social-network";
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",
@@ -105,6 +105,12 @@ export const AddArt: React.FC = () => {
         image: imageString,
         royaltyRate: "0.05"
       });
+      // create IOU on creation of artwork
+      await ledger.create(Iou.IouIssueRequest, {
+        issuer: 'digitalAsset',
+        requester: username, 
+        observers: [username]
+      })
       setImageString("")
       setText("")
       var image = document.getElementById(`${formIndex}`) as HTMLImageElement;

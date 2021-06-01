@@ -1,0 +1,96 @@
+module Iou where
+
+template Iou with
+    issuer: Party
+    owner: Party
+    amount: Decimal
+    observers: [Party]
+
+  where
+    ensure amount > 0.0
+    signatory issuer, owner
+
+    observer observers
+    controller owner can 
+      Iou_Transfer : ContractId IouTransfer
+        with
+          newOwner : Party
+        do create IouTransfer with iou = this; newOwner
+      
+      -- Split the IOU by dividing the amount.
+      Iou_Split : (ContractId Iou, ContractId Iou)
+         with
+          splitAmount: Decimal
+        do
+          let restAmount = amount - splitAmount
+          splitCid <- create this with amount = splitAmount
+          restCid <- create this with amount = restAmount
+          return (splitCid, restCid)
+
+
+      -- Merge two IOUs by aggregating their amounts.
+      Iou_Merge : ContractId Iou
+        with
+          otherCid: ContractId Iou
+        do
+          otherIou <- fetch otherCid
+          -- Check the two IOU's are compatible
+          assert (
+            owner == otherIou.owner &&
+            issuer == otherIou.issuer
+            )
+          -- Retire the old Iou
+          archive otherCid
+          -- Return the merged Iou
+          create this with amount = amount + otherIou.amount
+
+template IouIssueRequest with
+    issuer: Party
+    requester: Party
+    observers: [Party]
+
+  where
+    signatory requester
+
+    observer observers
+    controller issuer can 
+      Issue : ContractId Iou
+       
+        do 
+          create Iou with 
+            issuer = issuer
+            owner = requester
+            amount = 100.00
+            observers = [issuer, requester]
+          
+      
+   
+
+template IouTransfer
+  with
+    iou : Iou
+    newOwner : Party
+  where
+    signatory iou.issuer, iou.owner
+
+    controller iou.owner can
+      IouTransfer_Cancel : ContractId Iou
+        do create iou
+
+    controller newOwner can
+      IouTransfer_Reject : ContractId Iou
+        do create iou
+
+      IouTransfer_Accept : ContractId Iou
+        do
+          create iou with
+            owner = newOwner
+            observers = []
+
+
+
+
+
+
+
+
