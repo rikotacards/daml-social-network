@@ -56,6 +56,7 @@ setup = script do
     exerciseCmd aliceTokenOffer AcceptOffer
       with
         acceptingOwner = max
+        receivingAccount = aliceBank
 
 
   return ()
