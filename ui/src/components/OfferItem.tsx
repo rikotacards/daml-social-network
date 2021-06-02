@@ -10,7 +10,8 @@ import {
   useParty,
   useLedger,
   useStreamFetchByKeys,
-  useStreamQueries
+  useStreamQueries,
+  useFetchByKey
 } from "@daml/react";
 import { Button } from "semantic-ui-react";
 import { TokenArt } from "@daml.js/daml-social-network";
@@ -47,13 +48,24 @@ export const OfferItem: React.FC<OfferItemProps> = ({
 
   const myIous = useStreamQueries(Iou.Iou).contracts;
   const consolidatedIou = myIous?.[0]?.contractId
-
-
+  const {contract, loading} = useFetchByKey(TokenArt.TokenArt, () => ({_1:issuer,_2:owner, _3:image}), []);
+  console.log('contract', contract)
   const onClick = async () => {
+    
     try {
       await ledger.exercise(TokenArt.TokenOffer.AcceptOffer, contractId, {
         acceptingOwner: username,
-        iouCid: consolidatedIou
+        iouCid: consolidatedIou,
+      });
+    } catch (e) {
+      alert("error");
+    }
+  };
+
+  const onCancelClick = async () => {
+    
+    try {
+      await ledger.exercise(TokenArt.TokenOffer.ArchiveOffer, contractId, {
       });
     } catch (e) {
       alert("error");
@@ -76,6 +88,9 @@ export const OfferItem: React.FC<OfferItemProps> = ({
       </div>
       <div>
         <Button size='small' onClick={onClick} color="green">Buy</Button>
+      </div>
+      <div>
+        <Button size='small' onClick={onCancelClick} color="red">Cancel</Button>
       </div>
     </Card>
   );

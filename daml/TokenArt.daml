@@ -16,6 +16,14 @@ template TokenArt with
     key (issuer, owner, image): (Party, Party, Text)
     maintainer key._1
 
+    choice Transfer: ContractId TokenArt
+      with
+        newOwner: Party
+      controller newOwner
+      do
+        create this with 
+          owner = newOwner
+
     controller owner can
       TransferOwnership: ContractId TokenArt
         with
@@ -26,10 +34,11 @@ template TokenArt with
             owner = newOwner 
             lastPrice = price
           
-      nonconsuming Offer: ContractId TokenOffer
+      Offer: ContractId TokenOffer
         with
           reader: Party
           price: Decimal 
+          contract: ContractId TokenArt
 
         do 
           -- conver to choice
@@ -56,9 +65,9 @@ template TokenOffer with
     ensure price >= 0.0
 
     controller owner can
-      ArchiveOffer: ()
+      ArchiveOffer: ContractId TokenArt
         do
-          return ()
+          create TokenArt with ..
       
     choice AcceptOffer: (ContractId TokenArt, ContractId IouTransfer)
       with 
@@ -73,7 +82,6 @@ template TokenOffer with
         iouTransferCid <- exercise splitCid Iou_Transfer with
           newOwner = owner
 
-        
         -- TODO this creates two contracts
         tokenWithNewOwner <- create TokenArt with
           owner = acceptingOwner

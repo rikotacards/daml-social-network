@@ -40,7 +40,7 @@ export const Transactions: React.FC = () => {
    
     const history = iouTransferHistory.map((history) => { 
         return (
-          <Card className={classes.card}>
+          <Card className={classes.card} key={history.contractId}>
               <div className={classes.iouText}>
             <Typography className={classes.text}>From</Typography>
             <Typography>{history.payload.from}</Typography>

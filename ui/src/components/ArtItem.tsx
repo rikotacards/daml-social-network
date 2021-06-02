@@ -10,7 +10,6 @@ import { Typography, Card } from "@material-ui/core";
 import { Button } from "semantic-ui-react";
 import { ContractId } from "@daml/types";
 import { makeStyles, Theme } from "@material-ui/core";
-import { Tuple3 } from "@daml.js/40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7/lib/DA/Types";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -48,7 +47,8 @@ export const ArtItem: React.FC<ArtItemProps> = ({
         _1: issuer, 
         _2: owner, 
         _3: image
-      }, {})
+      }, {
+      })
     } catch (e){
       alert('error')
     }
@@ -58,7 +58,8 @@ export const ArtItem: React.FC<ArtItemProps> = ({
     try {
       await ledger.exercise(TokenArt.TokenArt.Offer, contractId, {
         reader: "reader",
-        price: "100.0"
+        price: price,
+        contract: contractId
       });
     } catch (e) {
       alert(`error`);

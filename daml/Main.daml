@@ -103,6 +103,18 @@ setup = script do
       with 
         reader = reader
         price = 40.0
+        contract = token
+
+  maxTokenOffer <- submit max do
+    exerciseCmd maxToken Offer
+      with 
+        reader = reader
+        price = 100.0
+        contract = maxToken
+  
+  maxTokenOfferAfterArchive <- submit max do 
+    exerciseCmd maxTokenOffer ArchiveOffer
+      
 -- This step includes the transfer proposal of the IOU
   (maxToken, iouTransferCid) <- submitMulti [max] [reader] do
     exerciseCmd aliceTokenOffer AcceptOffer
