@@ -14,39 +14,44 @@ import { isMobile } from "../platform/platform";
 
 export const OwnArt: React.FC = () => {
   const username = useParty();
-  // const myArt = useStreamFetchByKeys(TokenArt.TokenOffer, () => [], [
-  //     username
-  //   ]);
 
+ 
   // Gets all TokenArt contracts
   const myArt = useStreamQueries(TokenArt.TokenArt).contracts;
   console.log(myArt);
   if (!myArt?.length) {
     return (
-      <div>
-        <Card>
+        <Card style={{padding: '8px', margin: '8px'}}>
           <Typography>
             You have no art uploaded. Click Add art to add new art.
           </Typography>
         </Card>
-      </div>
     );
   }
 
-  const artDisplay = myArt.map(art => (
-    <Grid item xs={isMobile() ? 12 :4}>
+  const artDisplay = myArt.map(art => {
+    if(art.payload.owner === username){
+      return (
+        <Grid item xs={isMobile() ? 12 :4}>
       <ArtItem
         issuer={art.payload.issuer}
         owner={art.payload.owner}
         image={art.payload.image}
         issuedAt={art.payload.issuedAt}
         contractId={art.contractId}
+        price={art.payload.lastPrice}
       />
     </Grid>
-  ));
+      )
+    }
+  }
+    
+  );
   return (
     <div>
-      <Grid container>{artDisplay}</Grid>
+      <Grid container>
+      {artDisplay}
+      </Grid>
     </div>
   );
 };

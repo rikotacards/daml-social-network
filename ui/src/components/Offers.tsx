@@ -13,10 +13,15 @@ import { isMobile } from "../platform/platform";
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     margin: theme.spacing(1)
+  },
+  card: {
+    margin: theme.spacing(1),
+    padding: theme.spacing(1)
   }
 }));
 
 export const Offers: React.FC = () => {
+  const classes = useStyles();
   const tokenOffers = useStreamQueries(TokenArt.TokenOffer).contracts;
   console.log("tokenOffers", tokenOffers);
   const offerDisplay = tokenOffers.map(offer => {
@@ -24,7 +29,7 @@ export const Offers: React.FC = () => {
       <Grid item xs={ isMobile() ? 12 : 4}>
         <OfferItem
           owner={offer.payload.owner}
-          issuer={offer.payload.issuer}
+        issuer={offer.payload.issuer}
           image={offer.payload.image}
           contractId={offer.contractId}
           price={offer.payload.price}
@@ -34,9 +39,9 @@ export const Offers: React.FC = () => {
   });
   if (!tokenOffers?.length) {
     return (
-      <div>
+      <Card className={classes.card}>
         <Typography>No offers on market</Typography>
-      </div>
+      </Card>
     );
   }
   return (

@@ -29,6 +29,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: 0,
     width: "auto"
   },
+  button: {
+    width: '100%'
+  },
   uploadImageButton: {
     height: "58px",
     width: "58px",
@@ -100,6 +103,7 @@ export const AddArt: React.FC = () => {
 
   const addArt = async () => {
     try {
+      console.log('initalPrice', text)
       await ledger.exerciseByKey(User.User.MintToken, username, {
         initialPrice: text,
         image: imageString,
@@ -188,7 +192,7 @@ export const AddArt: React.FC = () => {
           id={`${formIndex}`}
         />
       </div>
-      <Button disabled={!imageString.length} size='small' variant="contained" onClick={addArt}>
+      <Button className={classes.button} disabled={!imageString.length} size='small' variant="contained" onClick={addArt}>
         add
       </Button>
     </Card>

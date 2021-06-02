@@ -14,17 +14,23 @@ import { Typography, Tabs, Tab } from "@material-ui/core";
 import { AddArt } from "./AddArt";
 import { OwnArt } from "./OwnArt";
 import { Offers } from "./Offers";
-import {makeStyles, Theme} from '@material-ui/core';
+import {makeStyles, Theme, Card, Button} from '@material-ui/core';
 import { IouTransfer } from "@daml.js/daml-social-network/lib/Iou";
-import { Button } from "semantic-ui-react";
 import { ledgerId } from "../config";
 import ledger from "@daml/ledger";
 import { MyPendingIous } from "./MyPendingIous";
+import { AboutMe } from "./AboutMe";
+import { Transactions } from "./Transactions";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'column'
+  },
+  tabs: {
+    display: 'flex', 
+    width: '33%'
+    
   }
 }))
 
@@ -70,8 +76,7 @@ export const HomePage: React.FC = () => {
   };
   return (
     <div className={classes.root}>
-      <Typography>{myUser?.username}</Typography>
-      <Typography>{myUser?.influence}</Typography>
+     <AboutMe/>
       <MyPendingIous/>
       <AddArt/>
       <Tabs
@@ -81,11 +86,15 @@ export const HomePage: React.FC = () => {
         onChange={handleChange}
         aria-label="disabled tabs example"
       >
-        <Tab label="My Art" />
-        <Tab label="Market" />
+        <Tab className={classes.tabs} label="My Art" />
+        <Tab className={classes.tabs} label="Market" />
+        <Tab className={classes.tabs}label="Transactions" />
+
        </Tabs>
         {value === 0 && (<OwnArt/>)}
         {value === 1 &&  (<Offers/>)}
+        {value === 2 &&  (<Transactions/>)}
+
 
     </div>
   );

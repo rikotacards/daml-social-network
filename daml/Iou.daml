@@ -7,7 +7,7 @@ template Iou with
     observers: [Party]
 
   where
-    ensure amount > 0.0
+    ensure amount >= 0.0
     signatory issuer, owner
 
     observer observers
@@ -15,14 +15,17 @@ template Iou with
       Iou_Transfer : ContractId IouTransfer
         with
           newOwner : Party
-        do create IouTransfer with iou = this; newOwner
+        do 
+          create IouTransfer with iou = this; newOwner
       
       -- Split the IOU by dividing the amount.
       Iou_Split : (ContractId Iou, ContractId Iou)
          with
           splitAmount: Decimal
         do
+          assertMsg "Split amount must be greater than 0" (splitAmount >= 0.0)
           let restAmount = amount - splitAmount
+          assertMsg "Remaining amount must be greater than 0" (restAmount >= 0.0)
           splitCid <- create this with amount = splitAmount
           restCid <- create this with amount = restAmount
           return (splitCid, restCid)
@@ -57,14 +60,26 @@ template IouIssueRequest with
       Issue : ContractId Iou
        
         do 
+
+          history <- create IouTransferHistory with
+            to = requester
+            from = issuer
+            amount = 100.00
+
           create Iou with 
             issuer = issuer
             owner = requester
             amount = 100.00
             observers = [issuer, requester]
-          
-      
-   
+
+template IouTransferHistory 
+  with
+    to: Party
+    from: Party
+    amount: Decimal
+  where
+    signatory to
+    observer from
 
 template IouTransfer
   with
@@ -83,9 +98,17 @@ template IouTransfer
 
       IouTransfer_Accept : ContractId Iou
         do
+
+          history <- create IouTransferHistory with
+            to = newOwner
+            from = iou.owner
+            amount = iou.amount
+          
           create iou with
             owner = newOwner
             observers = []
+          
+
 
 
 

@@ -22,6 +22,9 @@ const useStyles = makeStyles(theme => ({
   button: {
     marginLeft: "auto",
     marginRight: theme.spacing(1)
+  },
+  text: {
+    fontWeight: 'bold'
   }
 }));
 
@@ -35,7 +38,7 @@ export const MainScreen: React.FC<Props> = ({ onLogout }) => {
       <div className={classes.offset} />
       <AppBar position="fixed">
         <Toolbar>
-          <Typography>Daml Doodle</Typography>
+          <Typography className={classes.text}>Daml Doodle</Typography>
           <Button
             className={classes.button}
             size="small"

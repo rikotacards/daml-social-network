@@ -26,6 +26,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     text: {
         marginRight: theme.spacing(1)
+    },
+    label: {
+        marginLeft: theme.spacing(1)
     }
   }))
 
@@ -33,7 +36,6 @@ export const MyPendingIous: React.FC = () => {
     const username = useParty();
     const classes = useStyles()
     const ledger = useLedger();
-    const allUsers = useStreamQueries(User.User).contracts;
     const pendingIousTransfers = useStreamQueries(Iou.IouTransfer).contracts;
     const ious = useStreamQueries(Iou.Iou).contracts
 
@@ -77,7 +79,7 @@ export const MyPendingIous: React.FC = () => {
         try {
             await ledger.exercise(Iou.IouIssueRequest.Issue, contractId, {})
         } catch (e) {
-            console.log('hi', e)
+            console.log(e)
         }
     }
 
@@ -85,12 +87,16 @@ export const MyPendingIous: React.FC = () => {
     console.log('pdngin', pendingIssueRequests)
     const pendingIssueDisplay = pendingIssueRequests.map((issue) => {
         return (
-            <div>
-                {issue.contractId}
-                <Button onClick={() => onGrantIssue(issue.contractId)}>
+            <Card className={classes.card}>
+                <div className={classes.iouText}>
+                <Typography className={classes.text}>{'issuer'}</Typography>
+                <Typography>{issue.payload.issuer}</Typography>
+                {username === 'digitalAsset' && <div>{issue.payload.requester}</div>}
+                {username === 'digitalAsset' && <Button variant='contained' onClick={() => onGrantIssue(issue.contractId)}>
                     grant
-                </Button>
-            </div>
+                </Button>}
+                </div>
+            </Card>
         )
     })
 
@@ -99,8 +105,10 @@ export const MyPendingIous: React.FC = () => {
       return (
         <div>
           {transfers.key}
+          from
+          {transfers.payload.iou.owner}
           <div>
-            <Button onClick={() => onAcceptPaymentClick(transfers.contractId)}>Accept payment</Button>
+            <Button variant ='contained' onClick={() => onAcceptPaymentClick(transfers.contractId)}>Accept payment</Button>
           </div>
         </div>
       )
@@ -109,9 +117,11 @@ export const MyPendingIous: React.FC = () => {
   
     return (
         <div>
-            {iousDisplay}
+            <Typography className={classes.label} >My Balance</Typography>
+            {iousDisplay.length === 0 ? <Typography className={classes.label}>Currently 0, Upload photo to get 100 credits</Typography> : iousDisplay}
             {pendingTransfersDisplay}
-            {username === 'digitalAsset' && pendingIssueDisplay}
+           {pendingIssueDisplay.length > 0 &&  <Typography className={classes.label} >Pending payments</Typography>}
+            {pendingIssueDisplay}
         </div>
     )
 }
