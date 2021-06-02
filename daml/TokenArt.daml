@@ -1,5 +1,5 @@
 module TokenArt where
-
+import Iou
 template TokenArt with
     issuer: Party
     owner: Party
@@ -8,18 +8,31 @@ template TokenArt with
     image: Text
     royaltyRate: Decimal
   where 
+    -- signatory needs to include owner and issuer
+    -- otherwise issuer can just archive contract without owners consent
     signatory issuer
+    ensure lastPrice >= 0.0
 
     key (issuer, owner, image): (Party, Party, Text)
     maintainer key._1
 
     controller owner can
+      TransferOwnership: ContractId TokenArt
+        with
+          newOwner: Party
+          price: Decimal
+        do
+          create this with 
+            owner = newOwner 
+            lastPrice = price
+          
       nonconsuming Offer: ContractId TokenOffer
         with
           reader: Party
           price: Decimal 
 
         do 
+          -- conver to choice
           create TokenOffer with ..
 
    
@@ -40,21 +53,33 @@ template TokenOffer with
     observer reader
     key (issuer, owner, image): (Party, Party, Text)
     maintainer key._2
+    ensure price >= 0.0
 
     controller owner can
       ArchiveOffer: ()
         do
           return ()
       
-    choice AcceptOffer: ContractId TokenArt
+    choice AcceptOffer: (ContractId TokenArt, ContractId IouTransfer)
       with 
         acceptingOwner: Party
+        iouCid: ContractId Iou
       controller acceptingOwner
+         
       do
-       create TokenArt with
+        (splitCid, restCid) <- exercise iouCid Iou_Split with
+          splitAmount = price
+        
+        iouTransferCid <- exercise splitCid Iou_Transfer with
+          newOwner = owner
+
+        
+        -- TODO this creates two contracts
+        tokenWithNewOwner <- create TokenArt with
           owner = acceptingOwner
           lastPrice = price
           ..
+        return (tokenWithNewOwner, iouTransferCid)
     
 
 

@@ -3,11 +3,14 @@ import Daml.Script
 
 import TokenArt
 import User
+import Iou
 
 setup : Script ()
 setup = script do
   alice <- allocatePartyWithHint "Alice" (PartyIdHint "Alice")
   max <- allocatePartyWithHint "Max" (PartyIdHint "Max")
+  digitalAsset <- allocatePartyWithHint "DigitalAsset" (PartyIdHint "DigitalAsset")
+
 
   -- reader party allows for contracts to be readable by all
   reader <- allocatePartyWithHint "Reader" (PartyIdHint "Reader")
@@ -22,6 +25,56 @@ setup = script do
         reader = reader
         influence = 0.0
   
+  -- Max creates first art work
+  maxToken <- submit max do
+    exerciseCmd maxUser MintToken
+      with
+        initialPrice = 100.00
+        image = "maxImage1"
+        royaltyRate = 0.05
+
+-- DA issues IOU for creating doodles
+-- Essentially DA pays creators to encourate content generation
+  iouIssuedByDA <- submit digitalAsset do  
+    createCmd Iou 
+      with
+        issuer = digitalAsset
+        owner = digitalAsset
+        amount = 100.0
+        observers = [digitalAsset]
+    
+  transferCid <- submit digitalAsset do  
+    exerciseCmd iouIssuedByDA Iou_Transfer
+      with
+        newOwner = max
+
+  maxIou <- submit max do
+    exerciseCmd transferCid IouTransfer_Accept   
+
+
+-- DA issues IOU for creating doodles
+-- Essentially DA pays creators to encourate content generation
+  iou2IssuedByDA <- submit digitalAsset do  
+    createCmd Iou 
+      with
+        issuer = digitalAsset
+        owner = digitalAsset
+        amount = 100.0
+        observers = [digitalAsset]
+    
+  transferCid2 <- submit digitalAsset do  
+    exerciseCmd iou2IssuedByDA Iou_Transfer
+      with
+        newOwner = max
+
+  maxIou2 <- submit max do
+    exerciseCmd transferCid2 IouTransfer_Accept  
+
+  
+  consolidatedMaxIou <- submit max do
+    exerciseCmd maxIou Iou_Merge with
+      otherCid = maxIou2
+
   aliceUser <- submit alice do
     createCmd User
       with
@@ -34,20 +87,32 @@ setup = script do
   token <- submit alice do
     exerciseCmd aliceUser MintToken
       with
-        initialPrice = 100.00
-        image = "text"
+        initialPrice = 40.00
+        image = "aliceText"
+        royaltyRate = 0.05
+  
+  token2 <- submit alice do
+    exerciseCmd aliceUser MintToken
+      with
+        initialPrice = 30.00
+        image = "aliceText2"
         royaltyRate = 0.05
 
   aliceTokenOffer <- submit alice do
     exerciseCmd token Offer
       with 
         reader = reader
-        price = 100.0
-
-  maxToken <- submitMulti [max] [reader] do
+        price = 40.0
+-- This step includes the transfer proposal of the IOU
+  (maxToken, iouTransferCid) <- submitMulti [max] [reader] do
     exerciseCmd aliceTokenOffer AcceptOffer
       with
         acceptingOwner = max
+        iouCid = consolidatedMaxIou
+
+  aliceIou <- submit alice do 
+    exerciseCmd iouTransferCid IouTransfer_Accept
+
 
 
   return ()

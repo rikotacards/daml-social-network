@@ -26,6 +26,7 @@ interface ArtItemProps {
   owner: string;
   image: string;
   issuedAt: string;
+  price: string;
   contractId: ContractId<TokenArt.TokenArt>;
 }
 
@@ -34,12 +35,12 @@ export const ArtItem: React.FC<ArtItemProps> = ({
   issuer,
   owner,
   image,
-  issuedAt
+  issuedAt,
+  price
 }) => {
   //   const username = useParty();
   const ledger = useLedger();
   const classes = useStyles();
-  console.log('contractID', contractId)
 
   const onCancelClick = async() => {
     try {
@@ -68,12 +69,16 @@ export const ArtItem: React.FC<ArtItemProps> = ({
         <img className={classes.image} src={image}/>
       <div>
 
-        <Typography>creator:</Typography>
+        <Typography variant="caption">creator:</Typography>
         <Typography variant="caption">{issuer}</Typography>
       </div>
       <div>
-        <Typography>created on:</Typography>
+        <Typography variant="caption">created on:</Typography>
         <Typography variant="caption">{issuedAt}</Typography>
+      </div>
+      <div>
+        <Typography variant="caption">price:</Typography>
+        <Typography variant="caption">{price}</Typography>
       </div>
       <div>
         <Button onClick={onOfferClick}>offer</Button>

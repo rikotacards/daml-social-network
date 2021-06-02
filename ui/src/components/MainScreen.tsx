@@ -22,6 +22,9 @@ const useStyles = makeStyles(theme => ({
   button: {
     marginLeft: "auto",
     marginRight: theme.spacing(1)
+  },
+  text: {
+    fontWeight: 'bold'
   }
 }));
 
@@ -35,7 +38,7 @@ export const MainScreen: React.FC<Props> = ({ onLogout }) => {
       <div className={classes.offset} />
       <AppBar position="fixed">
         <Toolbar>
-          <Typography>Daml Doodle</Typography>
+          <Typography className={classes.text}>Daml Doodle</Typography>
           <Button
             className={classes.button}
             size="small"
@@ -47,31 +50,6 @@ export const MainScreen: React.FC<Props> = ({ onLogout }) => {
         </Toolbar>
       </AppBar>
       <HomePage />
-
-      {/* <Menu icon borderless>
-        <Menu.Item>
-          <Image
-            as='a'
-            href='https://www.daml.com/'
-            target='_blank'
-            src='/daml.svg'
-            alt='Daml Logo'
-            size='mini'
-          />
-        </Menu.Item>
-        <Menu.Menu position='right' className='test-select-main-menu'>
-          <Menu.Item position='right'>
-            You are logged in as {useParty()}.
-          </Menu.Item>
-          <Menu.Item
-            position='right'
-            active={false}
-            className='test-select-log-out'
-            onClick={onLogout}
-            icon='log out'
-          />
-        </Menu.Menu>
-      </Menu> */}
     </div>
   );
 };

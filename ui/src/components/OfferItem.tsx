@@ -14,6 +14,7 @@ import {
 } from "@daml/react";
 import { Button } from "semantic-ui-react";
 import { TokenArt } from "@daml.js/daml-social-network";
+import { Iou } from "@daml.js/daml-social-network";
 import { ContractId } from "@daml/types";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -44,10 +45,15 @@ export const OfferItem: React.FC<OfferItemProps> = ({
   const ledger = useLedger();
   const username = useParty();
 
+  const myIous = useStreamQueries(Iou.Iou).contracts;
+  const consolidatedIou = myIous?.[0]?.contractId
+
+
   const onClick = async () => {
     try {
       await ledger.exercise(TokenArt.TokenOffer.AcceptOffer, contractId, {
-        acceptingOwner: username
+        acceptingOwner: username,
+        iouCid: consolidatedIou
       });
     } catch (e) {
       alert("error");

@@ -6,7 +6,7 @@ import {
   useStreamFetchByKeys,
   useStreamQueries
 } from "@daml/react";
-import { User } from "@daml.js/daml-social-network";
+import { User, Iou } from "@daml.js/daml-social-network";
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",
@@ -28,6 +28,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     overflowY: "auto",
     padding: 0,
     width: "auto"
+  },
+  button: {
+    width: '100%'
   },
   uploadImageButton: {
     height: "58px",
@@ -100,11 +103,18 @@ export const AddArt: React.FC = () => {
 
   const addArt = async () => {
     try {
+      console.log('initalPrice', text)
       await ledger.exerciseByKey(User.User.MintToken, username, {
         initialPrice: text,
         image: imageString,
         royaltyRate: "0.05"
       });
+      // create IOU on creation of artwork
+      await ledger.create(Iou.IouIssueRequest, {
+        issuer: 'digitalAsset',
+        requester: username, 
+        observers: [username]
+      })
       setImageString("")
       setText("")
       var image = document.getElementById(`${formIndex}`) as HTMLImageElement;
@@ -182,7 +192,7 @@ export const AddArt: React.FC = () => {
           id={`${formIndex}`}
         />
       </div>
-      <Button disabled={!imageString.length} size='small' variant="contained" onClick={addArt}>
+      <Button className={classes.button} disabled={!imageString.length} size='small' variant="contained" onClick={addArt}>
         add
       </Button>
     </Card>

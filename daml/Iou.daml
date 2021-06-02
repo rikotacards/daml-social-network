@@ -1,0 +1,119 @@
+module Iou where
+
+template Iou with
+    issuer: Party
+    owner: Party
+    amount: Decimal
+    observers: [Party]
+
+  where
+    ensure amount >= 0.0
+    signatory issuer, owner
+
+    observer observers
+    controller owner can 
+      Iou_Transfer : ContractId IouTransfer
+        with
+          newOwner : Party
+        do 
+          create IouTransfer with iou = this; newOwner
+      
+      -- Split the IOU by dividing the amount.
+      Iou_Split : (ContractId Iou, ContractId Iou)
+         with
+          splitAmount: Decimal
+        do
+          assertMsg "Split amount must be greater than 0" (splitAmount >= 0.0)
+          let restAmount = amount - splitAmount
+          assertMsg "Remaining amount must be greater than 0" (restAmount >= 0.0)
+          splitCid <- create this with amount = splitAmount
+          restCid <- create this with amount = restAmount
+          return (splitCid, restCid)
+
+
+      -- Merge two IOUs by aggregating their amounts.
+      Iou_Merge : ContractId Iou
+        with
+          otherCid: ContractId Iou
+        do
+          otherIou <- fetch otherCid
+          -- Check the two IOU's are compatible
+          assert (
+            owner == otherIou.owner &&
+            issuer == otherIou.issuer
+            )
+          -- Retire the old Iou
+          archive otherCid
+          -- Return the merged Iou
+          create this with amount = amount + otherIou.amount
+
+template IouIssueRequest with
+    issuer: Party
+    requester: Party
+    observers: [Party]
+
+  where
+    signatory requester
+
+    observer observers
+    controller issuer can 
+      Issue : ContractId Iou
+       
+        do 
+
+          history <- create IouTransferHistory with
+            to = requester
+            from = issuer
+            amount = 100.00
+
+          create Iou with 
+            issuer = issuer
+            owner = requester
+            amount = 100.00
+            observers = [issuer, requester]
+
+template IouTransferHistory 
+  with
+    to: Party
+    from: Party
+    amount: Decimal
+  where
+    signatory to
+    observer from
+
+template IouTransfer
+  with
+    iou : Iou
+    newOwner : Party
+  where
+    signatory iou.issuer, iou.owner
+
+    controller iou.owner can
+      IouTransfer_Cancel : ContractId Iou
+        do create iou
+
+    controller newOwner can
+      IouTransfer_Reject : ContractId Iou
+        do create iou
+
+      IouTransfer_Accept : ContractId Iou
+        do
+
+          history <- create IouTransferHistory with
+            to = newOwner
+            from = iou.owner
+            amount = iou.amount
+          
+          create iou with
+            owner = newOwner
+            observers = []
+          
+
+
+
+
+
+
+
+
+
