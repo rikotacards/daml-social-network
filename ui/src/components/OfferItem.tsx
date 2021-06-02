@@ -86,12 +86,12 @@ export const OfferItem: React.FC<OfferItemProps> = ({
         <Typography variant="caption">price:</Typography>
         <Typography variant="caption">{price}</Typography>
       </div>
-      <div>
+      {username !== owner && <div>
         <Button size='small' onClick={onClick} color="green">Buy</Button>
-      </div>
-      <div>
-        <Button size='small' onClick={onCancelClick} color="red">Cancel</Button>
-      </div>
+      </div>}
+      {username === owner && (<div>
+        <Button size='small' onClick={onCancelClick} color="red">Remove Offer</Button>
+      </div>)}
     </Card>
   );
 };

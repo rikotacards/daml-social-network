@@ -42,16 +42,16 @@ export const Transactions: React.FC = () => {
         return (
           <Card className={classes.card} key={history.contractId}>
               <div className={classes.iouText}>
-            <Typography className={classes.text}>From</Typography>
-            <Typography>{history.payload.from}</Typography>
+            <Typography variant='caption' className={classes.text}>From</Typography>
+            <Typography variant='caption'>{history.payload.from}</Typography>
             </div>
             <div className={classes.iouText}>
-            <Typography className={classes.text}>To</Typography>
-            <Typography>{history.payload.to}</Typography>
+            <Typography variant='caption' className={classes.text}>To</Typography>
+            <Typography variant='caption'>{history.payload.to}</Typography>
             </div>
             <div className={classes.iouText}>
-            <Typography className={classes.text}>Amount</Typography>
-            <Typography>{history.payload.amount}</Typography>
+            <Typography variant='caption' className={classes.text}>Amount</Typography>
+            <Typography variant='caption'>{history.payload.amount}</Typography>
             </div>
        
           </Card>

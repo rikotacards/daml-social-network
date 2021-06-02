@@ -6,10 +6,10 @@ import {
   useStreamQueries
 } from "@daml/react";
 import { TokenArt } from "@daml.js/daml-social-network";
-import { Typography, Card } from "@material-ui/core";
-import { Button } from "semantic-ui-react";
+import { Typography, Card, TextField } from "@material-ui/core";
+import { Button, InputOnChangeData } from "semantic-ui-react";
 import { ContractId } from "@daml/types";
-import { makeStyles, Theme } from "@material-ui/core";
+import { makeStyles, Input, Theme } from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -18,6 +18,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   image: {
     width: '100%'
+}, 
+text: {
+  marginRight: theme.spacing(1)
+},
+buttonText: {
+  display: 'flex', 
+  flexDirection: 'row',
+  alignItems: 'center'
 }
 }));
 interface ArtItemProps {
@@ -40,25 +48,17 @@ export const ArtItem: React.FC<ArtItemProps> = ({
   //   const username = useParty();
   const ledger = useLedger();
   const classes = useStyles();
+  const [newPrice, setPrice ] = React.useState(price);
 
-  const onCancelClick = async() => {
-    try {
-      await ledger.exerciseByKey(TokenArt.TokenOffer.ArchiveOffer, {
-        _1: issuer, 
-        _2: owner, 
-        _3: image
-      }, {
-      })
-    } catch (e){
-      alert('error')
-    }
+  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setPrice(e.target.value);
   }
-
+ 
   const onOfferClick = async () => {
     try {
       await ledger.exercise(TokenArt.TokenArt.Offer, contractId, {
         reader: "reader",
-        price: price,
+        price: newPrice,
         contract: contractId
       });
     } catch (e) {
@@ -70,20 +70,21 @@ export const ArtItem: React.FC<ArtItemProps> = ({
         <img className={classes.image} src={image}/>
       <div>
 
-        <Typography variant="caption">creator:</Typography>
-        <Typography variant="caption">{issuer}</Typography>
+        <Typography className={classes.text} variant="caption">creator:</Typography>
+        <Typography className={classes.text} variant="caption">{issuer}</Typography>
       </div>
       <div>
-        <Typography variant="caption">created on:</Typography>
-        <Typography variant="caption">{issuedAt}</Typography>
+        <Typography className={classes.text} variant="caption">created on:</Typography>
+        <Typography className={classes.text} variant="caption">{issuedAt}</Typography>
       </div>
       <div>
-        <Typography variant="caption">price:</Typography>
-        <Typography variant="caption">{price}</Typography>
+        <Typography  className={classes.text} variant="caption">price:</Typography>
+        <Typography className={classes.text} variant="caption">{price}</Typography>
       </div>
-      <div>
-        <Button onClick={onOfferClick}>offer</Button>
-        <Button onClick={onCancelClick}>cancel offer</Button>
+      <div className={classes.buttonText}>
+        <Button onClick={onOfferClick}>offer to Market</Button>
+        <Typography>@</Typography>
+      <TextField size='small' variant='outlined' onChange={onChange} value={newPrice}/>
       </div>
     </Card>
   );

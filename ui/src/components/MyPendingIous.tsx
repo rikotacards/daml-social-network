@@ -47,14 +47,8 @@ export const MyPendingIous: React.FC = () => {
 
     const iousDisplay = ious.map((iou) => {
         return (
-            <Card className={classes.card}>
+            <div >
                 <div className={classes.iouText}>
-                <Typography className={classes.text}>
-                        issuer
-                    </Typography>
-                    <Typography className={classes.text}>
-                        {iou.payload.issuer}
-                    </Typography>
                     <Typography className={classes.text}>
                         amount
                     </Typography>
@@ -62,7 +56,7 @@ export const MyPendingIous: React.FC = () => {
                         {iou.payload.amount}
                     </Typography>
                 </div>
-            </Card>
+            </div>
         )
     })
     const onAcceptPaymentClick = async (iouTransferCid: ContractId<Iou.IouTransfer>) => {
@@ -87,7 +81,7 @@ export const MyPendingIous: React.FC = () => {
     console.log('pdngin', pendingIssueRequests)
     const pendingIssueDisplay = pendingIssueRequests.map((issue) => {
         return (
-            <Card className={classes.card}>
+            <div>
                 <div className={classes.iouText}>
                 <Typography className={classes.text}>{'issuer'}</Typography>
                 <Typography>{issue.payload.issuer}</Typography>
@@ -96,12 +90,15 @@ export const MyPendingIous: React.FC = () => {
                     grant
                 </Button>}
                 </div>
-            </Card>
+            </div>
         )
     })
 
   
     const pendingTransfersDisplay = pendingIousTransfers.map((transfers) => { 
+        if(transfers.payload.iou.owner === username){
+            return;
+        }
       return (
         <div>
           {transfers.key}
@@ -116,12 +113,14 @@ export const MyPendingIous: React.FC = () => {
 
   
     return (
-        <div>
+        <Card className={classes.card}>
             <Typography className={classes.label} >My Balance</Typography>
+            
+           
             {iousDisplay.length === 0 ? <Typography className={classes.label}>Currently 0, Upload photo to get 100 credits</Typography> : iousDisplay}
             {pendingTransfersDisplay}
            {pendingIssueDisplay.length > 0 &&  <Typography className={classes.label} >Pending payments</Typography>}
             {pendingIssueDisplay}
-        </div>
+        </Card>
     )
 }

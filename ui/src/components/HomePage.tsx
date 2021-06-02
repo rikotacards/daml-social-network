@@ -76,7 +76,7 @@ export const HomePage: React.FC = () => {
   };
   return (
     <div className={classes.root}>
-     <AboutMe/>
+     {/* <AboutMe/> */}
       <MyPendingIous/>
       <AddArt/>
       <Tabs
