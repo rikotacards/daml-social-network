@@ -111,7 +111,7 @@ export const AddArt: React.FC = () => {
       });
       // create IOU on creation of artwork
       await ledger.create(Iou.IouIssueRequest, {
-        issuer: 'digitalAsset',
+        issuer: 'ledger-party-a20ec465-1e93-4660-a413-29b9d305cb7e',
         requester: username, 
         observers: [username]
       })

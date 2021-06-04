@@ -24,7 +24,7 @@ function computeToken(party: string): string {
       "applicationId": APPLICATION_ID,
       "actAs": [party],
       // TODO: check if right way
-      "readAs": ['reader']
+      "readAs": ['reader', "public-m4e8hetozdq7lcu1"]
     }
   };
   return encode(payload, SECRET_KEY, 'HS256');
@@ -32,7 +32,10 @@ function computeToken(party: string): string {
 
 export const computeCredentials = (party: string): Credentials => {
   const token = computeToken(party);
+  console.log('token', token)
   return {party, token, ledgerId};
 }
 
 export default Credentials;
+
+

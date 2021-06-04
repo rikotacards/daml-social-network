@@ -6,8 +6,9 @@ import LoginScreen from "./LoginScreen";
 import { MainScreen } from "./MainScreen";
 import DamlLedger from "@daml/react";
 import Credentials from "../Credentials";
-import { httpBaseUrl } from "../config";
+import { httpBaseUrl, ledgerId } from "../config";
 import { makeStyles } from "@material-ui/core";
+import { PublicLedger, WellKnownPartiesProvider, useWellKnownParties } from '@daml/hub-react'
 
 /**
  * React component for the entry point into the application.
@@ -30,6 +31,7 @@ const App: React.FC = () => {
           party={credentials.party}
           httpBaseUrl={httpBaseUrl}
         >
+         
           <MainScreen onLogout={() => setCredentials(undefined)} />
         </DamlLedger>
       ) : (

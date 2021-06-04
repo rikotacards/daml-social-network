@@ -1,11 +1,9 @@
 import React from 'react'; 
-import {makeStyles,Typography, Theme, Card, Button} from '@material-ui/core';
+import {makeStyles,Typography, Theme, Card} from '@material-ui/core';
 
 import {
     useParty,
-    useLedger,
-    useStreamFetchByKeys,
-    useStreamQueries
+
   } from "@daml/react";
 
 const useStyles = makeStyles((theme: Theme) => ({

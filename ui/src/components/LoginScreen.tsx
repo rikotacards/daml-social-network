@@ -50,7 +50,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({onLogin}) => {
     if (token === null) {
       return;
     }
+    console.log('token', token)
     const party = url.searchParams.get('party');
+    console.log('party', party)
     if (party === null) {
       throw Error("When 'token' is passed via URL, 'party' must be passed too.");
     }

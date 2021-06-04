@@ -49,11 +49,9 @@ export const MyPendingIous: React.FC = () => {
         return (
             <div >
                 <div className={classes.iouText}>
+                   
                     <Typography className={classes.text}>
-                        amount
-                    </Typography>
-                    <Typography className={classes.text}>
-                        {iou.payload.amount}
+                        $ {iou.payload.amount}
                     </Typography>
                 </div>
             </div>
@@ -85,8 +83,8 @@ export const MyPendingIous: React.FC = () => {
                 <div className={classes.iouText}>
                 <Typography className={classes.text}>{'issuer'}</Typography>
                 <Typography>{issue.payload.issuer}</Typography>
-                {username === 'digitalAsset' && <div>{issue.payload.requester}</div>}
-                {username === 'digitalAsset' && <Button variant='contained' onClick={() => onGrantIssue(issue.contractId)}>
+                {username === 'ledger-party-a20ec465-1e93-4660-a413-29b9d305cb7e' && <div>{issue.payload.requester}</div>}
+                {username === 'ledger-party-a20ec465-1e93-4660-a413-29b9d305cb7e' && <Button variant='contained' onClick={() => onGrantIssue(issue.contractId)}>
                     grant
                 </Button>}
                 </div>

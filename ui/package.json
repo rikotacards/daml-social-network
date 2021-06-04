@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@daml.js/daml-social-network": "file:daml.js/daml-social-network-0.1.0",
+    "@daml/hub-react": "^0.3.0",
     "@daml/ledger": "1.13.1",
     "@daml/react": "1.13.1",
     "@daml/types": "1.13.1",

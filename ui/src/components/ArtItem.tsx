@@ -26,6 +26,9 @@ buttonText: {
   display: 'flex', 
   flexDirection: 'row',
   alignItems: 'center'
+},
+input: {
+  maxWidth: '100px'
 }
 }));
 interface ArtItemProps {
@@ -57,7 +60,7 @@ export const ArtItem: React.FC<ArtItemProps> = ({
   const onOfferClick = async () => {
     try {
       await ledger.exercise(TokenArt.TokenArt.Offer, contractId, {
-        reader: "reader",
+        reader: "public-m4e8hetozdq7lcu1",
         price: newPrice,
         contract: contractId
       });
@@ -83,8 +86,8 @@ export const ArtItem: React.FC<ArtItemProps> = ({
       </div>
       <div className={classes.buttonText}>
         <Button onClick={onOfferClick}>offer to Market</Button>
-        <Typography>@</Typography>
-      <TextField size='small' variant='outlined' onChange={onChange} value={newPrice}/>
+        <Typography style={{marginRight: '4px'}}>@</Typography>
+      <TextField className={classes.input} size='small' variant='outlined' onChange={onChange} value={newPrice}/>
       </div>
     </Card>
   );
