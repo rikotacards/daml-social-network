@@ -4,13 +4,12 @@ import {
   makeStyles,
   Card,
   Typography,
-  CardMedia
 } from "@material-ui/core";
 import {
   useParty,
   useLedger,
-  useStreamFetchByKeys,
-  useStreamQueries
+  useStreamQueries,
+  useFetchByKey
 } from "@daml/react";
 import { Button } from "semantic-ui-react";
 import { TokenArt } from "@daml.js/daml-social-network";
@@ -47,13 +46,24 @@ export const OfferItem: React.FC<OfferItemProps> = ({
 
   const myIous = useStreamQueries(Iou.Iou).contracts;
   const consolidatedIou = myIous?.[0]?.contractId
-
-
+  const {contract} = useFetchByKey(TokenArt.TokenArt, () => ({_1:issuer,_2:owner, _3:image}), [username]);
+  console.log('contract', contract)
   const onClick = async () => {
+    
     try {
       await ledger.exercise(TokenArt.TokenOffer.AcceptOffer, contractId, {
         acceptingOwner: username,
-        iouCid: consolidatedIou
+        iouCid: consolidatedIou,
+      });
+    } catch (e) {
+      alert("error");
+    }
+  };
+
+  const onCancelClick = async () => {
+    
+    try {
+      await ledger.exercise(TokenArt.TokenOffer.ArchiveOffer, contractId, {
       });
     } catch (e) {
       alert("error");
@@ -61,7 +71,7 @@ export const OfferItem: React.FC<OfferItemProps> = ({
   };
   return (
     <Card className={classes.root}>
-      <img className={classes.image} src={image}/>
+      <img className={classes.image} alt='img' src={image}/>
       <div>
         <Typography variant="caption">creator:</Typography>
         <Typography variant="caption">{issuer}</Typography>
@@ -74,9 +84,12 @@ export const OfferItem: React.FC<OfferItemProps> = ({
         <Typography variant="caption">price:</Typography>
         <Typography variant="caption">{price}</Typography>
       </div>
-      <div>
+      {username !== owner && <div>
         <Button size='small' onClick={onClick} color="green">Buy</Button>
-      </div>
+      </div>}
+      {username === owner && (<div>
+        <Button size='small' onClick={onCancelClick} color="red">Remove Offer</Button>
+      </div>)}
     </Card>
   );
 };

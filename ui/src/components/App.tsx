@@ -6,22 +6,20 @@ import LoginScreen from "./LoginScreen";
 import { MainScreen } from "./MainScreen";
 import DamlLedger from "@daml/react";
 import Credentials from "../Credentials";
-import { httpBaseUrl } from "../config";
-import { makeStyles } from "@material-ui/core";
+import { deploymentMode, DeploymentMode, httpBaseUrl } from '../config';
+import {  WellKnownPartiesProvider } from '@daml/hub-react'
+import { PublicProvider } from "./PublicProvider";
+
 
 /**
  * React component for the entry point into the application.
  */
 // APP_BEGIN
-const useStyles = makeStyles(theme => ({
-  offset: theme.mixins.toolbar
-}));
 
 const App: React.FC = () => {
   const [credentials, setCredentials] = React.useState<
     Credentials | undefined
   >();
-  const classes = useStyles();
   return (
     <div >
       {credentials ? (
@@ -30,7 +28,13 @@ const App: React.FC = () => {
           party={credentials.party}
           httpBaseUrl={httpBaseUrl}
         >
-          <MainScreen onLogout={() => setCredentials(undefined)} />
+          {deploymentMode === DeploymentMode.PROD_DABL ? (
+          <WellKnownPartiesProvider>
+            <PublicProvider>
+              <MainScreen onLogout={() => setCredentials(undefined)} />
+            </PublicProvider>
+          </WellKnownPartiesProvider>) : <MainScreen onLogout={() => setCredentials(undefined)} />
+          }
         </DamlLedger>
       ) : (
         <LoginScreen onLogin={setCredentials} />

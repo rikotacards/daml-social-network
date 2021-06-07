@@ -1,12 +1,11 @@
 import React from 'react'; 
-import { ContractId, Party } from "@daml/types";
+import { ContractId } from "@daml/types";
 import {makeStyles, Theme, Button, Typography, Card} from '@material-ui/core';
 
-import { Iou, User } from "@daml.js/daml-social-network";
+import { Iou } from "@daml.js/daml-social-network";
 import {
   useParty,
   useLedger,
-  useStreamFetchByKeys,
   useStreamQueries
 } from "@daml/react";
 
@@ -47,22 +46,14 @@ export const MyPendingIous: React.FC = () => {
 
     const iousDisplay = ious.map((iou) => {
         return (
-            <Card className={classes.card}>
+            <div >
                 <div className={classes.iouText}>
-                <Typography className={classes.text}>
-                        issuer
-                    </Typography>
+                   
                     <Typography className={classes.text}>
-                        {iou.payload.issuer}
-                    </Typography>
-                    <Typography className={classes.text}>
-                        amount
-                    </Typography>
-                    <Typography className={classes.text}>
-                        {iou.payload.amount}
+                        $ {iou.payload.amount}
                     </Typography>
                 </div>
-            </Card>
+            </div>
         )
     })
     const onAcceptPaymentClick = async (iouTransferCid: ContractId<Iou.IouTransfer>) => {
@@ -87,21 +78,24 @@ export const MyPendingIous: React.FC = () => {
     console.log('pdngin', pendingIssueRequests)
     const pendingIssueDisplay = pendingIssueRequests.map((issue) => {
         return (
-            <Card className={classes.card}>
+            <div>
                 <div className={classes.iouText}>
                 <Typography className={classes.text}>{'issuer'}</Typography>
                 <Typography>{issue.payload.issuer}</Typography>
-                {username === 'digitalAsset' && <div>{issue.payload.requester}</div>}
-                {username === 'digitalAsset' && <Button variant='contained' onClick={() => onGrantIssue(issue.contractId)}>
+                {username === 'ledger-party-a20ec465-1e93-4660-a413-29b9d305cb7e' && <div>{issue.payload.requester}</div>}
+                {username === 'ledger-party-a20ec465-1e93-4660-a413-29b9d305cb7e' && <Button variant='contained' onClick={() => onGrantIssue(issue.contractId)}>
                     grant
                 </Button>}
                 </div>
-            </Card>
+            </div>
         )
     })
 
   
     const pendingTransfersDisplay = pendingIousTransfers.map((transfers) => { 
+        if(transfers.payload.iou.owner === username){
+            return;
+        }
       return (
         <div>
           {transfers.key}
@@ -116,12 +110,14 @@ export const MyPendingIous: React.FC = () => {
 
   
     return (
-        <div>
+        <Card className={classes.card}>
             <Typography className={classes.label} >My Balance</Typography>
+            
+           
             {iousDisplay.length === 0 ? <Typography className={classes.label}>Currently 0, Upload photo to get 100 credits</Typography> : iousDisplay}
             {pendingTransfersDisplay}
            {pendingIssueDisplay.length > 0 &&  <Typography className={classes.label} >Pending payments</Typography>}
             {pendingIssueDisplay}
-        </div>
+        </Card>
     )
 }
