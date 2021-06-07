@@ -1,15 +1,12 @@
 import React from "react";
 import {
-  useParty,
   useLedger,
-  useStreamFetchByKeys,
-  useStreamQueries
 } from "@daml/react";
 import { TokenArt } from "@daml.js/daml-social-network";
 import { Typography, Card, TextField } from "@material-ui/core";
-import { Button, InputOnChangeData } from "semantic-ui-react";
 import { ContractId } from "@daml/types";
-import { makeStyles, Input, Theme } from "@material-ui/core";
+import { makeStyles,Button, Theme } from "@material-ui/core";
+
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -52,7 +49,6 @@ export const ArtItem: React.FC<ArtItemProps> = ({
   const ledger = useLedger();
   const classes = useStyles();
   const [newPrice, setPrice ] = React.useState(price);
-
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPrice(e.target.value);
   }
@@ -60,17 +56,18 @@ export const ArtItem: React.FC<ArtItemProps> = ({
   const onOfferClick = async () => {
     try {
       await ledger.exercise(TokenArt.TokenArt.Offer, contractId, {
-        reader: "public-m4e8hetozdq7lcu1",
+        reader: "public-wtcqmdkd3wt3ohp8",
         price: newPrice,
         contract: contractId
       });
     } catch (e) {
+      console.log(e)
       alert(`error`);
     }
   };
   return (
     <Card className={classes.root}>
-        <img className={classes.image} src={image}/>
+        <img className={classes.image} alt='img' src={image}/>
       <div>
 
         <Typography className={classes.text} variant="caption">creator:</Typography>
@@ -85,10 +82,12 @@ export const ArtItem: React.FC<ArtItemProps> = ({
         <Typography className={classes.text} variant="caption">{price}</Typography>
       </div>
       <div className={classes.buttonText}>
-        <Button onClick={onOfferClick}>offer to Market</Button>
+        <Button style={{marginRight: '4px'}} variant='contained' onClick={onOfferClick}>offer to Market</Button>
         <Typography style={{marginRight: '4px'}}>@</Typography>
       <TextField className={classes.input} size='small' variant='outlined' onChange={onChange} value={newPrice}/>
       </div>
     </Card>
   );
 };
+
+

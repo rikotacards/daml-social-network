@@ -1,12 +1,10 @@
 import React from 'react'
 import {
-    useParty,
-    useLedger,
     useStreamQueries
   } from "@daml/react";
 
-  import { Iou, User } from "@daml.js/daml-social-network";
-  import {makeStyles, Theme, Button, Typography, Card} from '@material-ui/core';
+  import { Iou } from "@daml.js/daml-social-network";
+  import {makeStyles, Theme, Typography, Card} from '@material-ui/core';
   const useStyles = makeStyles((theme: Theme) => ({
     root: {
       display: 'flex',
@@ -32,7 +30,6 @@ import {
 export const Transactions: React.FC = () => {
     const iouTransferHistory = useStreamQueries(Iou.IouTransferHistory).contracts
     const classes = useStyles()
-    const ledger = useLedger();
 
    
     const history = iouTransferHistory.map((history) => { 

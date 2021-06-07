@@ -3,8 +3,6 @@ import { Theme, makeStyles, Button, InputBase, Card } from "@material-ui/core";
 import {
   useParty,
   useLedger,
-  useStreamFetchByKeys,
-  useStreamQueries
 } from "@daml/react";
 import { User, Iou } from "@daml.js/daml-social-network";
 const useStyles = makeStyles((theme: Theme) => ({
@@ -106,7 +104,7 @@ export const AddArt: React.FC = () => {
       console.log('initalPrice', text)
       await ledger.exerciseByKey(User.User.MintToken, username, {
         initialPrice: text,
-        image: imageString,
+        image: text,
         royaltyRate: "0.05"
       });
       // create IOU on creation of artwork
@@ -120,6 +118,7 @@ export const AddArt: React.FC = () => {
       var image = document.getElementById(`${formIndex}`) as HTMLImageElement;
       image.src = "data:,"
     } catch (e) {
+      console.log(e)
       alert("error");
     }
   };
@@ -150,11 +149,8 @@ export const AddArt: React.FC = () => {
     }
   };
 
-  const myUserResult = useStreamFetchByKeys(User.User, () => [username], [
-    username
-  ]);
+
   const formIndex = "1";
-  const myUser = myUserResult.contracts[0]?.payload;
   return (
     <Card className={classes.card}>
       <div className={classes.writeContainer}>

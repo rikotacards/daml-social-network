@@ -12,7 +12,7 @@ template TokenArt with
     -- otherwise issuer can just archive contract without owners consent
     signatory issuer
     ensure lastPrice >= 0.0
-
+    observer issuer
     key (issuer, owner, image): (Party, Party, Text)
     maintainer key._1
 

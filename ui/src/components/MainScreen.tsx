@@ -3,9 +3,7 @@
 
 import React from "react";
 import { HomePage } from "./HomePage";
-import { useParty } from "@daml/react";
 import {
-  Theme,
   AppBar,
   Toolbar,
   makeStyles,

@@ -4,12 +4,10 @@ import {
   makeStyles,
   Card,
   Typography,
-  CardMedia
 } from "@material-ui/core";
 import {
   useParty,
   useLedger,
-  useStreamFetchByKeys,
   useStreamQueries,
   useFetchByKey
 } from "@daml/react";
@@ -48,7 +46,7 @@ export const OfferItem: React.FC<OfferItemProps> = ({
 
   const myIous = useStreamQueries(Iou.Iou).contracts;
   const consolidatedIou = myIous?.[0]?.contractId
-  const {contract, loading} = useFetchByKey(TokenArt.TokenArt, () => ({_1:issuer,_2:owner, _3:image}), []);
+  const {contract} = useFetchByKey(TokenArt.TokenArt, () => ({_1:issuer,_2:owner, _3:image}), [username]);
   console.log('contract', contract)
   const onClick = async () => {
     
@@ -73,7 +71,7 @@ export const OfferItem: React.FC<OfferItemProps> = ({
   };
   return (
     <Card className={classes.root}>
-      <img className={classes.image} src={image}/>
+      <img className={classes.image} alt='img' src={image}/>
       <div>
         <Typography variant="caption">creator:</Typography>
         <Typography variant="caption">{issuer}</Typography>

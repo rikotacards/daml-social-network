@@ -1,12 +1,11 @@
 import React from 'react'; 
-import { ContractId, Party } from "@daml/types";
+import { ContractId } from "@daml/types";
 import {makeStyles, Theme, Button, Typography, Card} from '@material-ui/core';
 
-import { Iou, User } from "@daml.js/daml-social-network";
+import { Iou } from "@daml.js/daml-social-network";
 import {
   useParty,
   useLedger,
-  useStreamFetchByKeys,
   useStreamQueries
 } from "@daml/react";
 
