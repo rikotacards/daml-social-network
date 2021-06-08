@@ -84,10 +84,15 @@ const useStyles = makeStyles((theme: Theme) => ({
     position: "absolute"
   }
 }));
+
+const apiUrl = 'https://api.imgur.com/3/image';
+
+
 export const AddArt: React.FC = () => {
   const ledger = useLedger();
   const username = useParty();
   const classes = useStyles();
+  
   const [text, setText] = React.useState("");
   const [isImageLoaded, setImageLoaded] = React.useState<boolean>(false);
   const [imageString, setImageString] = React.useState("");
@@ -130,15 +135,34 @@ export const AddArt: React.FC = () => {
     if (image && URL) {
       image.src = URL?.createObjectURL(event?.target?.files?.[0]);
       const imageFile = event?.target?.files?.[0];
+      
+      console.log('imagefile', imageFile)
+     
 
       if (!imageFile) {
         return;
       }
+      const formData = new FormData();
+      
       reader.readAsDataURL(imageFile);
 
       reader.onload = function() {
+        formData.append('image', imageFile);
+        const output = fetch(
+          'https://api.imgur.com/3/image',
+          { 
+            body: formData,
+            method: 'POST',
+            // mode: 'cors',
+            headers: {
+              Authorization: 'Client-ID 3b1fcdfffca2b64',
+              Accept: "application/json",
+              'Content-Type':'multipart/form-data'
+            }
+          }
+        ).then((res) => res.json()).then((result) => console.log(result)).catch((e) => console.log('There is an error:', e))
+        
         setImageString(`${reader.result}`);
-        console.log("re", reader.result);
       };
       reader.onerror = function(error) {
         console.log("Error: ", error);
