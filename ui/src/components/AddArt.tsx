@@ -1,5 +1,5 @@
 import React from "react";
-import { Theme, makeStyles, Button, InputBase, Card } from "@material-ui/core";
+import { Theme, makeStyles, Button, InputBase, Card, LinearProgress } from "@material-ui/core";
 import {
   useParty,
   useLedger,
@@ -99,8 +99,8 @@ export const AddArt: React.FC = () => {
   const [isImageLoaded, setImageLoaded] = React.useState<boolean>(false);
   const [imageString, setImageString] = React.useState("");
   const [file, setFile] = React.useState<File | undefined>(undefined);
-  const [imgHash, setHash] = React.useState("")
-
+  const [isPosting, setIsPosting ] = React.useState<boolean>(false);
+  
   const onTextChange = React.useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setText(e.target.value);
@@ -109,14 +109,13 @@ export const AddArt: React.FC = () => {
   );
 
   const addArt = async () => {
-
+    setIsPosting(true);
     try {
       const result = await pinata.pinJSONToIPFS({ message: imageString })
-      console.log('await result', result.IpfsHash)
-      setHash(result.IpfsHash)
       await ledger.exerciseByKey(User.User.MintToken, username, {
         initialPrice: text,
         image: result.IpfsHash,
+        // TODO: remove hardcode royalty
         royaltyRate: "0.05"
       });
       // create IOU on creation of artwork
@@ -125,22 +124,17 @@ export const AddArt: React.FC = () => {
         requester: username,
         observers: [username]
       })
-    } catch (e) {
-      console.log('pinFileToIPFS error', e)
-    }
-    
-
-    try {
-      
-
       setImageString("")
       setText("")
       var image = document.getElementById(`${formIndex}`) as HTMLImageElement;
       image.src = "data:,"
+      setIsPosting(false);
     } catch (e) {
-      console.log(e)
+      console.log('pinFileToIPFS error', e)
       alert("error");
     }
+
+
   };
 
   const loadFile = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -152,16 +146,14 @@ export const AddArt: React.FC = () => {
 
       const imageFile = event?.target?.files?.[0]
       setFile(imageFile)
-      if(!imageFile){return;}
+      if (!imageFile) { return; }
       reader.readAsDataURL(imageFile);
 
       reader.onload = function () {
-        console.log('hi')
         if (file) {
           reader.readAsDataURL(file);
 
         }
-        console.log('imageFile', imageFile)
         setImageString(`${reader.result}`);
       };
       reader.onerror = function (error) {
@@ -210,11 +202,14 @@ export const AddArt: React.FC = () => {
           value={text}
           onChange={onTextChange}
           id={`${formIndex}`}
+          disabled={isPosting}
         />
       </div>
-      <Button className={classes.button} size='small' variant="contained" onClick={addArt}>
-        add
+      <Button disabled={isPosting} className={classes.button} size='small' variant="contained" onClick={addArt}>
+        {isPosting ? "Posting" : "add"}
       </Button>
+      {isPosting &&  <LinearProgress variant='indeterminate'/>}
+
     </Card>
   );
 };

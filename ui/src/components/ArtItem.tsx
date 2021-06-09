@@ -6,6 +6,7 @@ import { TokenArt } from "@daml.js/daml-social-network";
 import { Typography, Card, TextField } from "@material-ui/core";
 import { ContractId } from "@daml/types";
 import { makeStyles, Button, Theme } from "@material-ui/core";
+import { getPinataImageString } from "../pinataUtils";
 
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -22,10 +23,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   buttonText: {
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginTop: theme.spacing(0.5)
   },
   input: {
     maxWidth: '100px'
+  },
+  offerButton: {
+    textTransform: 'capitalize'
   }
 }));
 interface ArtItemProps {
@@ -45,34 +50,15 @@ export const ArtItem: React.FC<ArtItemProps> = ({
   issuedAt,
   price
 }) => {
-  //   const username = useParty();
   const ledger = useLedger();
   const classes = useStyles();
-  console.log(image)
   const [newPrice, setPrice] = React.useState(price);
   const [base64String, setBase64String] = React.useState("")
-
-  const getPinataImageString = async () => {
-    console.log('get', image)
-    try {
-      const response = await fetch(
-        `https://gateway.pinata.cloud/ipfs/${image}`,
-        {
-          method: 'GET',
-        }
-      )
-      return response.json()
-    } catch (e) {
-      console.log('e', e)
-    }
-
-  }
+ 
   if (image) {
-    getPinataImageString().then((data) => setBase64String(data.message))
+    getPinataImageString(image).then((data) => setBase64String(data.message))
 
   }
-
-
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPrice(e.target.value);
@@ -108,7 +94,7 @@ export const ArtItem: React.FC<ArtItemProps> = ({
         <Typography className={classes.text} variant="caption">{price}</Typography>
       </div>
       <div className={classes.buttonText}>
-        <Button style={{ marginRight: '4px' }} variant='contained' onClick={onOfferClick}>offer to Market</Button>
+        <Button className={classes.buttonText}  color='secondary' style={{ marginRight: '4px' }} variant='contained' onClick={onOfferClick}>Make Offer</Button>
         <Typography style={{ marginRight: '4px' }}>@</Typography>
         <TextField className={classes.input} size='small' variant='outlined' onChange={onChange} value={newPrice} />
       </div>
