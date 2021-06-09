@@ -94,7 +94,7 @@ export const ArtItem: React.FC<ArtItemProps> = ({
         <Typography className={classes.text} variant="caption">{price}</Typography>
       </div>
       <div className={classes.buttonText}>
-        <Button className={classes.buttonText}  color='secondary' style={{ marginRight: '4px' }} variant='contained' onClick={onOfferClick}>Make Offer</Button>
+        <Button className={classes.buttonText} style={{ marginRight: '4px' }} variant='contained' onClick={onOfferClick}>Make Offer</Button>
         <Typography style={{ marginRight: '4px' }}>@</Typography>
         <TextField className={classes.input} size='small' variant='outlined' onChange={onChange} value={newPrice} />
       </div>
