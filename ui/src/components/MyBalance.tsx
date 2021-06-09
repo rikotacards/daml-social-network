@@ -1,10 +1,9 @@
 import React from 'react'; 
 import {
-    useParty,
     useLedger,
     useStreamQueries
   } from "@daml/react";
-  import {makeStyles, Theme, Button, Typography, Card} from '@material-ui/core';
+  import {makeStyles, Theme, Typography, Card} from '@material-ui/core';
   import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
   import { Iou } from "@daml.js/daml-social-network";
 const useStyles = makeStyles((theme: Theme) => ({

@@ -8,7 +8,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import clsx from 'clsx';
 import { User, Iou } from "@daml.js/daml-social-network";
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
-import { deploymentMode, DeploymentMode, httpBaseUrl } from '../config';
+import { deploymentMode, DeploymentMode } from '../config';
 
 const pinataSDK = require('@pinata/sdk');
 const pinata = pinataSDK('fa9904749cba5c53bb0f', 'fbea9988c9579fb242a4bf95fefb4417e06ef740d1f5f3ae1149105f46c60d2a');
@@ -110,6 +110,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   displaynone: {
     display: 'none'
+  },
+  disclosure: {
+    // padding: theme.spacing(1),
+    margin: theme.spacing(1)
+  },
+  disclosureText: {
+    fontStyle: 'italic'
   }
 }));
 
@@ -127,7 +134,6 @@ export const AddArt: React.FC = () => {
   const [file, setFile] = React.useState<File | undefined>(undefined);
   const [isPosting, setIsPosting] = React.useState<boolean>(false);
   const [isOpen, setIsOpen] = React.useState(false);
-  const [isUploadOpen, setUpload] = React.useState(false);
 
   //@ts-ignore
   const handleClose = (event, reason) => {
@@ -145,10 +151,7 @@ export const AddArt: React.FC = () => {
     []
   );
 
-  const onUploadClick = () => {
-    console.log('click')
-    setUpload(true)
-  }
+
 
   const addArt = async () => {
     setIsPosting(true);
@@ -255,10 +258,13 @@ export const AddArt: React.FC = () => {
             disabled={isPosting}
           />
         </div>
-        <Button disabled={isPosting} className={classes.button} size='small' variant="contained" onClick={addArt}>
+        <Button disabled={isPosting || (!text.length || !imageString.length)} className={classes.button} size='small' variant="contained" onClick={addArt}>
           {isPosting ? "Posting" : "add"}
         </Button>
         {isPosting && <LinearProgress variant='indeterminate' />}
+        <div className={classes.disclosure}>
+          <Typography className={classes.disclosureText}variant='caption' >Disclosure: Images are uploaded to IPFS and will be permanently on the network.</Typography>
+        </div>
 
       </Card>
       <Snackbar  message='Success!' open={isOpen} autoHideDuration={3000} onClose={handleClose} >

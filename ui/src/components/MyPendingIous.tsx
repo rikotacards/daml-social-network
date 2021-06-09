@@ -37,26 +37,7 @@ export const MyPendingIous: React.FC = () => {
     const classes = useStyles()
     const ledger = useLedger();
     const pendingIousTransfers = useStreamQueries(Iou.IouTransfer).contracts;
-    const ious = useStreamQueries(Iou.Iou).contracts
 
-    if (ious.length > 1) {
-        ledger.exercise(Iou.Iou.Iou_Merge, ious[0].contractId, {
-            otherCid: ious[1].contractId
-        })
-    }
-
-    const iousDisplay = ious.map((iou) => {
-        return (
-            <div key={iou.contractId}>
-                <div className={classes.iouText}>
-
-                    <Typography className={classes.text}>
-                        $ {iou.payload.amount}
-                    </Typography>
-                </div>
-            </div>
-        )
-    })
     const onAcceptPaymentClick = async (iouTransferCid: ContractId<Iou.IouTransfer>) => {
         try {
             await ledger.exercise(Iou.IouTransfer.IouTransfer_Accept, iouTransferCid, {
@@ -76,7 +57,6 @@ export const MyPendingIous: React.FC = () => {
     }
 
     const pendingIssueRequests = useStreamQueries(Iou.IouIssueRequest).contracts;
-    console.log('pdngin', pendingIssueRequests)
     const pendingIssueDisplay = pendingIssueRequests.map((issue) => {
         return (
             <Card className={classes.card} key={issue.contractId}>

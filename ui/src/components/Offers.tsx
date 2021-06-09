@@ -6,6 +6,8 @@ import { TokenArt } from "@daml.js/daml-social-network";
 import { Card, Theme, makeStyles, Typography, Grid, CircularProgress } from "@material-ui/core";
 import { OfferItem } from "./OfferItem";
 import { isMobile } from "../platform/platform";
+import { Button } from "semantic-ui-react";
+import { MyOffers } from "./MyOffers";
 
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -15,16 +17,25 @@ const useStyles = makeStyles((theme: Theme) => ({
   card: {
     margin: theme.spacing(1),
     padding: theme.spacing(1)
-  }
+  },
+  buttonContainer: {
+    padding: theme.spacing(1),
+    display: 'flex'
+  },
+
 }));
 
 export const Offers: React.FC = () => {
   const classes = useStyles();
+  const [pageName, setPage] = React.useState("other")
+  const onPageClick = (name: string) => {
+    setPage(name)
+  }
   const tokenOffers = useStreamQueries(TokenArt.TokenOffer)
   console.log("tokenOffers", tokenOffers);
   const offerDisplay = tokenOffers.contracts.map(offer => {
     return (
-      <Grid item xs={isMobile() ? 12 : 4}>
+      <Grid key={offer.contractId} item xs={isMobile() ? 12 : 4}>
         <OfferItem
           owner={offer.payload.owner}
           issuer={offer.payload.issuer}
@@ -49,7 +60,13 @@ export const Offers: React.FC = () => {
   }
   return (
     <div>
-      <Grid container>{offerDisplay}</Grid>
+      <div className={classes.buttonContainer}>
+        <Button onClick={() => onPageClick('my')}>My Offers</Button>
+        <Button onClick={() => onPageClick('other')}>Market Offers</Button>
+
+      </div>
+      {pageName === 'my' && <MyOffers />}
+      {pageName === 'other' && <Grid container>{offerDisplay}</Grid>}
     </div>
   );
 };

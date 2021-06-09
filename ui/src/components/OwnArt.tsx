@@ -3,11 +3,10 @@ import { TokenArt } from "@daml.js/daml-social-network";
 
 import {
   useParty,
-  useQuery,
   useStreamQueries
 } from "@daml/react";
 import { ArtItem } from "./ArtItem";
-import { CircularProgress, Grid } from "@material-ui/core";
+import { CircularProgress, Grid, LinearProgress } from "@material-ui/core";
 import { isMobile } from "../platform/platform";
 import { OfferItem } from "./OfferItem";
 
@@ -59,15 +58,13 @@ export const OwnArt: React.FC = () => {
 
   if (myArt.loading) {
     return (
-      <CircularProgress />
+      <LinearProgress variant='indeterminate' />
     )
   }
   return (
-    <div>
       <Grid container>
         {offerDisplay}
         {artDisplay}
       </Grid>
-    </div>
   );
 };

@@ -16,7 +16,6 @@ import { TokenArt } from "@daml.js/daml-social-network";
 import { Iou } from "@daml.js/daml-social-network";
 import { ContractId } from "@daml/types";
 import { getPinataImageString } from "../pinataUtils";
-import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     padding: theme.spacing(1),

@@ -36,7 +36,7 @@ export const MainScreen: React.FC<Props> = ({ onLogout }) => {
       <div className={classes.offset} />
       <AppBar position="fixed">
         <Toolbar>
-          <Typography className={classes.text}>Daml Doodle</Typography>
+          <Typography className={classes.text}>Daml NFT</Typography>
           <Button
             className={classes.button}
             size="small"
