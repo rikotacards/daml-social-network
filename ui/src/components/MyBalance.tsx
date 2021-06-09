@@ -18,7 +18,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     card: {
         padding: theme.spacing(1), 
-        margin: theme.spacing(1,1,0,1)
+        margin: theme.spacing(1,1,0,1),
+        borderColor: 'orange',
+        border: '2px solid'
     },
     text: {
         marginRight: theme.spacing(1)
@@ -26,7 +28,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     label: {
         marginLeft: theme.spacing(1),
         display: 'flex', 
-        alignItems: 'center'
+        alignItems: 'center',
+        fontWeight: 'bold'
     },
     moneyIcon: {
         color: 'orange',
@@ -63,7 +66,7 @@ export const MyBalance: React.FC = () => {
 
     return (
         <Card className={classes.card}>
-        {iousDisplay.length === 0 ? <Typography variant='body2' className={classes.label}>{<MonetizationOnIcon className={classes.moneyIcon}/>} 0.00 - Upload photo to get 100 credits</Typography> : iousDisplay}
+        {iousDisplay.length === 0 ? <Typography variant='body2' className={classes.label}>{<MonetizationOnIcon className={classes.moneyIcon}/>} $0.00 - Upload photo to get 100 credits</Typography> : iousDisplay}
 
         </Card>
     )

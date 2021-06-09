@@ -8,6 +8,7 @@ import {
     useLedger,
     useStreamQueries
 } from "@daml/react";
+import { adminParty } from './AddArt';
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -64,8 +65,8 @@ export const MyPendingIous: React.FC = () => {
                     <Typography className={classes.text}>{'From:'}</Typography>
                     <Typography>{issue.payload.issuer}</Typography>
 
-                    {(username === 'ledger-party-a20ec465-1e93-4660-a413-29b9d305cb7e' || username === 'digitalAsset') && <div>{issue.payload.requester}</div>}
-                    {(username === 'ledger-party-a20ec465-1e93-4660-a413-29b9d305cb7e' || username === 'digitalAsset') && <Button variant='contained' onClick={() => onGrantIssue(issue.contractId)}>
+                    {(username === adminParty || username === 'digitalAsset') && <div>{issue.payload.requester}</div>}
+                    {(username === adminParty || username === 'digitalAsset') && <Button variant='contained' onClick={() => onGrantIssue(issue.contractId)}>
                         grant
                 </Button>}
                 </div>

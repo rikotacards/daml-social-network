@@ -63,13 +63,17 @@ export const OfferItem: React.FC<OfferItemProps> = ({
   const consolidatedIou = myIous?.[0]?.contractId
   const [base64String, setBase64String] = React.useState("")
 
-
+  
   getPinataImageString(image).then((data) => setBase64String(data.message))
 
   const onClick = async () => {
 
     try {
-      await ledger.exercise(TokenArt.TokenOffer.AcceptOffer, contractId, {
+      // await ledger.exercise(TokenArt.TokenOffer.AcceptOffer, contractId, {
+      //   acceptingOwner: username,
+      //   iouCid: consolidatedIou,
+      // });
+      await ledger.exerciseByKey(TokenArt.TokenOffer.AcceptOffer, {_1: issuer, _2: owner, _3: image}, {
         acceptingOwner: username,
         iouCid: consolidatedIou,
       });

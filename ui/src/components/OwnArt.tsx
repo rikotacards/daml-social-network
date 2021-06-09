@@ -6,7 +6,7 @@ import {
   useStreamQueries
 } from "@daml/react";
 import { ArtItem } from "./ArtItem";
-import { CircularProgress, Grid, LinearProgress } from "@material-ui/core";
+import { CircularProgress, Grid, LinearProgress, Typography } from "@material-ui/core";
 import { isMobile } from "../platform/platform";
 import { OfferItem } from "./OfferItem";
 
@@ -63,6 +63,7 @@ export const OwnArt: React.FC = () => {
   }
   return (
       <Grid container>
+        {(artDisplay.length === 0 && offerDisplay.length ===0) && <Typography style={{marginLeft: '8px', display: 'flex', justifySelf: 'center'}}>No art work uploaded</Typography>}
         {offerDisplay}
         {artDisplay}
       </Grid>
