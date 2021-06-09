@@ -15,6 +15,7 @@ import { Button } from "semantic-ui-react";
 import { TokenArt } from "@daml.js/daml-social-network";
 import { Iou } from "@daml.js/daml-social-network";
 import { ContractId } from "@daml/types";
+import { getPinataImageString } from "../pinataUtils";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -22,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     margin: theme.spacing(1)
   },
   image: {
-      width: '100%'
+    width: '100%'
   }
 }));
 
@@ -46,10 +47,16 @@ export const OfferItem: React.FC<OfferItemProps> = ({
 
   const myIous = useStreamQueries(Iou.Iou).contracts;
   const consolidatedIou = myIous?.[0]?.contractId
-  const {contract} = useFetchByKey(TokenArt.TokenArt, () => ({_1:issuer,_2:owner, _3:image}), [username]);
+  const [base64String, setBase64String] = React.useState("")
+
+
+  getPinataImageString(image).then((data) => setBase64String(data.message))
+
+
+  const { contract } = useFetchByKey(TokenArt.TokenArt, () => ({ _1: issuer, _2: owner, _3: image }), [username]);
   console.log('contract', contract)
   const onClick = async () => {
-    
+
     try {
       await ledger.exercise(TokenArt.TokenOffer.AcceptOffer, contractId, {
         acceptingOwner: username,
@@ -61,7 +68,7 @@ export const OfferItem: React.FC<OfferItemProps> = ({
   };
 
   const onCancelClick = async () => {
-    
+
     try {
       await ledger.exercise(TokenArt.TokenOffer.ArchiveOffer, contractId, {
       });
@@ -71,7 +78,7 @@ export const OfferItem: React.FC<OfferItemProps> = ({
   };
   return (
     <Card className={classes.root}>
-      <img className={classes.image} alt='img' src={image}/>
+      <img className={classes.image} alt='img' src={base64String} />
       <div>
         <Typography variant="caption">creator:</Typography>
         <Typography variant="caption">{issuer}</Typography>

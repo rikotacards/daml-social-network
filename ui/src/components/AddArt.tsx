@@ -1,14 +1,25 @@
 import React from "react";
-import { Theme, makeStyles, Button, InputBase, Card } from "@material-ui/core";
+import { Theme, makeStyles, Button, InputBase, Card, LinearProgress, Typography } from "@material-ui/core";
 import {
   useParty,
   useLedger,
 } from "@daml/react";
+import Snackbar from '@material-ui/core/Snackbar';
+import clsx from 'clsx';
 import { User, Iou } from "@daml.js/daml-social-network";
+import CameraAltIcon from '@material-ui/icons/CameraAlt';
+const pinataSDK = require('@pinata/sdk');
+const pinata = pinataSDK('fa9904749cba5c53bb0f', 'fbea9988c9579fb242a4bf95fefb4417e06ef740d1f5f3ae1149105f46c60d2a');
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexDirection: "column"
+  },
+  cameraIcon: {
+    opacity: '0.5'
+  },
+  nonOpac: {
+    opacity: '1'
   },
   card: {
     margin: theme.spacing(1),
@@ -39,7 +50,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderColor: theme.palette.divider,
     alignItems: "center",
     justifyContent: "center",
-    margin: theme.spacing(1,1,1,0),
+    margin: theme.spacing(1, 1, 1, 0),
     borderRadius: theme.shape.borderRadius,
     position: "relative"
   },
@@ -65,7 +76,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   addRow: {
     margin: theme.spacing(1)
   },
- 
+
   input: {
     display: "none",
     position: "absolute"
@@ -80,17 +91,44 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: "58px",
     width: "58px"
   },
+  hidden: {
+    visibility: 'hidden',
+  },
   label: {
     position: "absolute"
+  },
+  snackbar: {
+    // width: '100%'
+  },
+  displaynone: {
+    display: 'none'
   }
 }));
+
+
+
 export const AddArt: React.FC = () => {
   const ledger = useLedger();
   const username = useParty();
   const classes = useStyles();
+  const formIndex = "1";
+
   const [text, setText] = React.useState("");
   const [isImageLoaded, setImageLoaded] = React.useState<boolean>(false);
   const [imageString, setImageString] = React.useState("");
+  const [file, setFile] = React.useState<File | undefined>(undefined);
+  const [isPosting, setIsPosting] = React.useState<boolean>(false);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [isUploadOpen, setUpload] = React.useState(false);
+
+  //@ts-ignore
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setIsOpen(false);
+  };
 
   const onTextChange = React.useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -99,98 +137,123 @@ export const AddArt: React.FC = () => {
     []
   );
 
+  const onUploadClick = () => {
+    console.log('click')
+    setUpload(true)
+  }
+
   const addArt = async () => {
+    setIsPosting(true);
     try {
-      console.log('initalPrice', text)
+      const result = await pinata.pinJSONToIPFS({ message: imageString })
       await ledger.exerciseByKey(User.User.MintToken, username, {
         initialPrice: text,
-        image: text,
+        image: result.IpfsHash,
+        // TODO: remove hardcode royalty
         royaltyRate: "0.05"
       });
       // create IOU on creation of artwork
       await ledger.create(Iou.IouIssueRequest, {
         issuer: 'ledger-party-a20ec465-1e93-4660-a413-29b9d305cb7e',
-        requester: username, 
+        requester: username,
         observers: [username]
       })
       setImageString("")
       setText("")
       var image = document.getElementById(`${formIndex}`) as HTMLImageElement;
       image.src = "data:,"
+      setIsPosting(false);
+      setIsOpen(true)
+
     } catch (e) {
-      console.log(e)
+      console.log('pinFileToIPFS error', e)
+      setIsOpen(false);
+      setIsPosting(false);
       alert("error");
     }
+
+
   };
 
   const loadFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-    var reader = new FileReader();
+    const reader = new FileReader();
+    const image = document.getElementById(`${formIndex}`) as HTMLImageElement;
 
-    var image = document.getElementById(`${formIndex}`) as HTMLImageElement;
+
     if (image && URL) {
-      image.src = URL?.createObjectURL(event?.target?.files?.[0]);
-      const imageFile = event?.target?.files?.[0];
+      image.src = URL?.createObjectURL(event?.target?.files?.[0]) || "";
 
-      if (!imageFile) {
-        return;
-      }
+      const imageFile = event?.target?.files?.[0]
+      setFile(imageFile)
+
+      if (!imageFile) { return; }
       reader.readAsDataURL(imageFile);
 
-      reader.onload = function() {
+      reader.onload = function () {
+        if (file) {
+          reader.readAsDataURL(file);
+
+        }
+        console.log('image', image)
         setImageString(`${reader.result}`);
-        console.log("re", reader.result);
       };
-      reader.onerror = function(error) {
+      reader.onerror = function (error) {
         console.log("Error: ", error);
       };
 
-      // uploadPostPhoto(user.uid, fileName, event?.target.files)
       setImageLoaded(!isImageLoaded);
     }
   };
 
 
-  const formIndex = "1";
   return (
-    <Card className={classes.card}>
-      <div className={classes.writeContainer}>
-        <div className={classes.uploadImageButton}>
-          <input
-            className={classes.input}
-            accept="image/*"
-            id={`${formIndex}contained-button-file`}
-            type="file"
-            onChange={loadFile}
-          />
+    <>
+      <Card className={classes.card}>
+        <div className={classes.writeContainer}>
+          <div className={classes.uploadImageButton}>
+           
+           <input
+              className={classes.input}
+              accept="image/*"
+              id={`${formIndex}contained-button-file`}
+              type="file"
+              onChange={loadFile}
+            />
 
-          {
+
             <label
               className={classes.label}
               htmlFor={`${formIndex}contained-button-file`}
             >
-              {'upload'}
+              <CameraAltIcon className={imageString.length > 0 ? classes.cameraIcon : classes.nonOpac}/>
             </label>
-          }
-         <img
+
+            <img
               alt=''
+              id={`${formIndex}`}
+              className={clsx(classes.image, !imageString.length && classes.hidden)}
+              
+            />
+          </div>
+          <InputBase
+            className={classes.textField}
+            placeholder={`Set price, eg "100.0"`}
+            multiline
+            rows={3}
+            inputProps={{ "aria-label": "naked" }}
+            value={text}
+            onChange={onTextChange}
             id={`${formIndex}`}
-            className={classes.image}
+            disabled={isPosting}
           />
         </div>
-        <InputBase
-          className={classes.textField}
-          placeholder={`Set price, eg "100.0"`}
-          multiline
-          rows={3}
-          inputProps={{ "aria-label": "naked" }}
-          value={text}
-          onChange={onTextChange}
-          id={`${formIndex}`}
-        />
-      </div>
-      <Button className={classes.button} disabled={!imageString.length} size='small' variant="contained" onClick={addArt}>
-        add
-      </Button>
-    </Card>
+        <Button disabled={isPosting} className={classes.button} size='small' variant="contained" onClick={addArt}>
+          {isPosting ? "Posting" : "add"}
+        </Button>
+        {isPosting && <LinearProgress variant='indeterminate' />}
+
+      </Card>
+      <Snackbar className={classes.snackbar} message='Success!' color='green' open={isOpen} autoHideDuration={2000} onClose={handleClose} />
+    </>
   );
 };

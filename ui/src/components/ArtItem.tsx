@@ -5,7 +5,8 @@ import {
 import { TokenArt } from "@daml.js/daml-social-network";
 import { Typography, Card, TextField } from "@material-ui/core";
 import { ContractId } from "@daml/types";
-import { makeStyles,Button, Theme } from "@material-ui/core";
+import { makeStyles, Button, Theme } from "@material-ui/core";
+import { getPinataImageString } from "../pinataUtils";
 
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -15,18 +16,22 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   image: {
     width: '100%'
-}, 
-text: {
-  marginRight: theme.spacing(1)
-},
-buttonText: {
-  display: 'flex', 
-  flexDirection: 'row',
-  alignItems: 'center'
-},
-input: {
-  maxWidth: '100px'
-}
+  },
+  text: {
+    marginRight: theme.spacing(1)
+  },
+  buttonText: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: theme.spacing(0.5)
+  },
+  input: {
+    maxWidth: '100px'
+  },
+  offerButton: {
+    textTransform: 'capitalize'
+  }
 }));
 interface ArtItemProps {
   issuer: string;
@@ -45,17 +50,24 @@ export const ArtItem: React.FC<ArtItemProps> = ({
   issuedAt,
   price
 }) => {
-  //   const username = useParty();
   const ledger = useLedger();
   const classes = useStyles();
-  const [newPrice, setPrice ] = React.useState(price);
+  const [newPrice, setPrice] = React.useState(price);
+  const [base64String, setBase64String] = React.useState("")
+ 
+  if (image) {
+    getPinataImageString(image).then((data) => setBase64String(data.message))
+
+  }
+
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPrice(e.target.value);
   }
- 
+
   const onOfferClick = async () => {
     try {
       await ledger.exercise(TokenArt.TokenArt.Offer, contractId, {
+        // TODO: Remove hardcoded. This is for Daml Hub.
         reader: "public-wtcqmdkd3wt3ohp8",
         price: newPrice,
         contract: contractId
@@ -67,7 +79,7 @@ export const ArtItem: React.FC<ArtItemProps> = ({
   };
   return (
     <Card className={classes.root}>
-        <img className={classes.image} alt='img' src={image}/>
+      <img className={classes.image} alt='img' src={base64String} />
       <div>
 
         <Typography className={classes.text} variant="caption">creator:</Typography>
@@ -78,13 +90,13 @@ export const ArtItem: React.FC<ArtItemProps> = ({
         <Typography className={classes.text} variant="caption">{issuedAt}</Typography>
       </div>
       <div>
-        <Typography  className={classes.text} variant="caption">price:</Typography>
+        <Typography className={classes.text} variant="caption">price:</Typography>
         <Typography className={classes.text} variant="caption">{price}</Typography>
       </div>
       <div className={classes.buttonText}>
-        <Button style={{marginRight: '4px'}} variant='contained' onClick={onOfferClick}>offer to Market</Button>
-        <Typography style={{marginRight: '4px'}}>@</Typography>
-      <TextField className={classes.input} size='small' variant='outlined' onChange={onChange} value={newPrice}/>
+        <Button className={classes.buttonText} style={{ marginRight: '4px' }} variant='contained' onClick={onOfferClick}>Make Offer</Button>
+        <Typography style={{ marginRight: '4px' }}>@</Typography>
+        <TextField className={classes.input} size='small' variant='outlined' onChange={onChange} value={newPrice} />
       </div>
     </Card>
   );
