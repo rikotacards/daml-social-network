@@ -5,6 +5,9 @@ import {
   useLedger,
 } from "@daml/react";
 import { User, Iou } from "@daml.js/daml-social-network";
+const pinataSDK = require('@pinata/sdk');
+const pinata = pinataSDK('fa9904749cba5c53bb0f', 'fbea9988c9579fb242a4bf95fefb4417e06ef740d1f5f3ae1149105f46c60d2a');
+
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",
@@ -39,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderColor: theme.palette.divider,
     alignItems: "center",
     justifyContent: "center",
-    margin: theme.spacing(1,1,1,0),
+    margin: theme.spacing(1, 1, 1, 0),
     borderRadius: theme.shape.borderRadius,
     position: "relative"
   },
@@ -65,7 +68,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   addRow: {
     margin: theme.spacing(1)
   },
- 
+
   input: {
     display: "none",
     position: "absolute"
@@ -85,17 +88,18 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const apiUrl = 'https://api.imgur.com/3/image';
 
 
 export const AddArt: React.FC = () => {
   const ledger = useLedger();
   const username = useParty();
   const classes = useStyles();
-  
+
   const [text, setText] = React.useState("");
   const [isImageLoaded, setImageLoaded] = React.useState<boolean>(false);
   const [imageString, setImageString] = React.useState("");
+  const [file, setFile] = React.useState<File | undefined>(undefined);
+  const [imgHash, setHash] = React.useState("")
 
   const onTextChange = React.useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -105,19 +109,30 @@ export const AddArt: React.FC = () => {
   );
 
   const addArt = async () => {
+
     try {
-      console.log('initalPrice', text)
+      const result = await pinata.pinJSONToIPFS({ message: imageString })
+      console.log('await result', result.IpfsHash)
+      setHash(result.IpfsHash)
       await ledger.exerciseByKey(User.User.MintToken, username, {
         initialPrice: text,
-        image: text,
+        image: result.IpfsHash,
         royaltyRate: "0.05"
       });
       // create IOU on creation of artwork
       await ledger.create(Iou.IouIssueRequest, {
         issuer: 'ledger-party-a20ec465-1e93-4660-a413-29b9d305cb7e',
-        requester: username, 
+        requester: username,
         observers: [username]
       })
+    } catch (e) {
+      console.log('pinFileToIPFS error', e)
+    }
+    
+
+    try {
+      
+
       setImageString("")
       setText("")
       var image = document.getElementById(`${formIndex}`) as HTMLImageElement;
@@ -129,42 +144,27 @@ export const AddArt: React.FC = () => {
   };
 
   const loadFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-    var reader = new FileReader();
+    const reader = new FileReader();
 
-    var image = document.getElementById(`${formIndex}`) as HTMLImageElement;
+    const image = document.getElementById(`${formIndex}`) as HTMLImageElement;
     if (image && URL) {
       image.src = URL?.createObjectURL(event?.target?.files?.[0]);
-      const imageFile = event?.target?.files?.[0];
-      
-      console.log('imagefile', imageFile)
-     
 
-      if (!imageFile) {
-        return;
-      }
-      const formData = new FormData();
-      
+      const imageFile = event?.target?.files?.[0]
+      setFile(imageFile)
+      if(!imageFile){return;}
       reader.readAsDataURL(imageFile);
 
-      reader.onload = function() {
-        formData.append('image', imageFile);
-        const output = fetch(
-          'https://api.imgur.com/3/image',
-          { 
-            body: formData,
-            method: 'POST',
-            // mode: 'cors',
-            headers: {
-              Authorization: 'Client-ID 3b1fcdfffca2b64',
-              Accept: "application/json",
-              'Content-Type':'multipart/form-data'
-            }
-          }
-        ).then((res) => res.json()).then((result) => console.log(result)).catch((e) => console.log('There is an error:', e))
-        
+      reader.onload = function () {
+        console.log('hi')
+        if (file) {
+          reader.readAsDataURL(file);
+
+        }
+        console.log('imageFile', imageFile)
         setImageString(`${reader.result}`);
       };
-      reader.onerror = function(error) {
+      reader.onerror = function (error) {
         console.log("Error: ", error);
       };
 
@@ -195,8 +195,8 @@ export const AddArt: React.FC = () => {
               {'upload'}
             </label>
           }
-         <img
-              alt=''
+          <img
+            alt=''
             id={`${formIndex}`}
             className={classes.image}
           />
@@ -212,7 +212,7 @@ export const AddArt: React.FC = () => {
           id={`${formIndex}`}
         />
       </div>
-      <Button className={classes.button} disabled={!imageString.length} size='small' variant="contained" onClick={addArt}>
+      <Button className={classes.button} size='small' variant="contained" onClick={addArt}>
         add
       </Button>
     </Card>

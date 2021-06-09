@@ -46,7 +46,7 @@ export const MyPendingIous: React.FC = () => {
 
     const iousDisplay = ious.map((iou) => {
         return (
-            <div >
+            <div key={iou.contractId}>
                 <div className={classes.iouText}>
                    
                     <Typography className={classes.text}>
@@ -78,7 +78,7 @@ export const MyPendingIous: React.FC = () => {
     console.log('pdngin', pendingIssueRequests)
     const pendingIssueDisplay = pendingIssueRequests.map((issue) => {
         return (
-            <div>
+            <div key={issue.contractId}>
                 <div className={classes.iouText}>
                 <Typography className={classes.text}>{'issuer'}</Typography>
                 <Typography>{issue.payload.issuer}</Typography>
