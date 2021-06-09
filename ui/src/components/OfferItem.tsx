@@ -9,14 +9,14 @@ import {
   useParty,
   useLedger,
   useStreamQueries,
-  useFetchByKey
+  
 } from "@daml/react";
 import { Button } from "semantic-ui-react";
 import { TokenArt } from "@daml.js/daml-social-network";
 import { Iou } from "@daml.js/daml-social-network";
 import { ContractId } from "@daml/types";
 import { getPinataImageString } from "../pinataUtils";
-
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     padding: theme.spacing(1),
@@ -24,6 +24,21 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   image: {
     width: '100%'
+  },
+  container: {
+    display: 'flex'
+  },
+  buyContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    marginTop: theme.spacing(0.5)
+  },
+  buy: {
+    marginLeft: theme.spacing(1)
+  },
+  title: {
+    marginRight: theme.spacing(1),
+    fontWeight: 'bold'
   }
 }));
 
@@ -52,9 +67,6 @@ export const OfferItem: React.FC<OfferItemProps> = ({
 
   getPinataImageString(image).then((data) => setBase64String(data.message))
 
-
-  const { contract } = useFetchByKey(TokenArt.TokenArt, () => ({ _1: issuer, _2: owner, _3: image }), [username]);
-  console.log('contract', contract)
   const onClick = async () => {
 
     try {
@@ -79,20 +91,16 @@ export const OfferItem: React.FC<OfferItemProps> = ({
   return (
     <Card className={classes.root}>
       <img className={classes.image} alt='img' src={base64String} />
-      <div>
-        <Typography variant="caption">creator:</Typography>
+      <div className={classes.container}>
+        <Typography className={classes.title} variant="caption">Creator: </Typography>
         <Typography variant="caption">{issuer}</Typography>
       </div>
-      <div>
-        <Typography variant="caption">owner:</Typography>
+      <div className={classes.container}>
+        <Typography className={classes.title} variant="caption">Owner: </Typography>
         <Typography variant="caption">{owner}</Typography>
       </div>
-      <div>
-        <Typography variant="caption">price:</Typography>
-        <Typography variant="caption">{price}</Typography>
-      </div>
-      {username !== owner && <div>
-        <Button size='small' onClick={onClick} color="green">Buy</Button>
+      {username !== owner && <div className={classes.buyContainer}>
+        <Button  size='small' onClick={onClick} color="green">Buy @ ${price} </Button>
       </div>}
       {username === owner && (<div>
         <Button size='small' onClick={onCancelClick} color="red">Remove Offer</Button>

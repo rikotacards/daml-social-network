@@ -8,6 +8,8 @@ import Snackbar from '@material-ui/core/Snackbar';
 import clsx from 'clsx';
 import { User, Iou } from "@daml.js/daml-social-network";
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
+import { deploymentMode, DeploymentMode, httpBaseUrl } from '../config';
+
 const pinataSDK = require('@pinata/sdk');
 const pinata = pinataSDK('fa9904749cba5c53bb0f', 'fbea9988c9579fb242a4bf95fefb4417e06ef740d1f5f3ae1149105f46c60d2a');
 const useStyles = makeStyles((theme: Theme) => ({
@@ -98,7 +100,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     position: "absolute"
   },
   snackbar: {
-    // width: '100%'
+    width: '100%',
+    backgroundColor: theme.palette.success.main,
+    padding: theme.spacing(1),
+    height: '40px',
+    borderRadius: theme.shape.borderRadius,
+    display: 'flex', 
+    alignItems: 'center'
   },
   displaynone: {
     display: 'none'
@@ -153,8 +161,9 @@ export const AddArt: React.FC = () => {
         royaltyRate: "0.05"
       });
       // create IOU on creation of artwork
+      // TODO remove 
       await ledger.create(Iou.IouIssueRequest, {
-        issuer: 'ledger-party-a20ec465-1e93-4660-a413-29b9d305cb7e',
+        issuer: deploymentMode === DeploymentMode.PROD_DABL ? 'ledger-party-a20ec465-1e93-4660-a413-29b9d305cb7e' : 'digitalAsset',
         requester: username,
         observers: [username]
       })
@@ -178,7 +187,6 @@ export const AddArt: React.FC = () => {
   const loadFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     const reader = new FileReader();
     const image = document.getElementById(`${formIndex}`) as HTMLImageElement;
-
 
     if (image && URL) {
       image.src = URL?.createObjectURL(event?.target?.files?.[0]) || "";
@@ -253,7 +261,11 @@ export const AddArt: React.FC = () => {
         {isPosting && <LinearProgress variant='indeterminate' />}
 
       </Card>
-      <Snackbar className={classes.snackbar} message='Success!' color='green' open={isOpen} autoHideDuration={2000} onClose={handleClose} />
+      <Snackbar  message='Success!' open={isOpen} autoHideDuration={3000} onClose={handleClose} >
+        <div className={classes.snackbar}>
+          <Typography>Success!</Typography>
+        </div>
+        </Snackbar>
     </>
   );
 };
