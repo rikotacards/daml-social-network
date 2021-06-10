@@ -9,6 +9,8 @@ import { makeStyles, Button, Theme } from "@material-ui/core";
 import { getPinataImageString } from "../pinataUtils";
 import { deploymentMode, DeploymentMode } from '../config';
 
+export const publicParty = "public-vqe14zmbblsl30te"
+//  "public-wtcqmdkd3wt3ohp8"
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -74,7 +76,7 @@ export const ArtItem: React.FC<ArtItemProps> = ({
       setMakingOffer(true);
       await ledger.exercise(TokenArt.TokenArt.Offer, contractId, {
         // TODO: Remove hardcoded. This is for Daml Hub.
-        reader: deploymentMode === DeploymentMode.PROD_DABL ? "public-wtcqmdkd3wt3ohp8" : "reader",
+        reader: deploymentMode === DeploymentMode.PROD_DABL ? publicParty : "reader",
         price: newPrice,
         contract: contractId
       });

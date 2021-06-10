@@ -65,7 +65,7 @@ export const MyBalance: React.FC = () => {
     })
 
     return (
-        <Card className={classes.card}>
+        <Card elevation={0} className={classes.card}>
         {iousDisplay.length === 0 ? <Typography variant='body2' className={classes.label}>{<MonetizationOnIcon className={classes.moneyIcon}/>} $0.00 - Upload photo to get 100 credits</Typography> : iousDisplay}
 
         </Card>

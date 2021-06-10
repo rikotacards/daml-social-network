@@ -24,7 +24,7 @@ function computeToken(party: string): string {
       "applicationId": APPLICATION_ID,
       "actAs": [party],
       // TODO: check if right way
-      "readAs": ['reader', "public-m4e8hetozdq7lcu1"]
+      "readAs": ['reader']
     }
   };
   return encode(payload, SECRET_KEY, 'HS256');

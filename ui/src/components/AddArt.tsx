@@ -14,7 +14,8 @@ import { isMobile } from "../platform/platform";
 const pinataSDK = require('@pinata/sdk');
 
 const pinata = pinataSDK('fa9904749cba5c53bb0f', 'fbea9988c9579fb242a4bf95fefb4417e06ef740d1f5f3ae1149105f46c60d2a');
-export const adminParty = 'ledger-party-33fb400f-c6a8-4cd4-bc57-54f2ad212c39'
+export const adminParty = 'ledger-party-25de662b-3c2b-4622-86ca-a7759cf97d02'
+// 'ledger-party-33fb400f-c6a8-4cd4-bc57-54f2ad212c39'
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",

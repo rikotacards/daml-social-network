@@ -3,11 +3,13 @@ import {
   useStreamQueries
 } from "@daml/react";
 import { TokenArt } from "@daml.js/daml-social-network";
-import { Card, Theme, makeStyles, Typography, Grid, CircularProgress } from "@material-ui/core";
+import { Card, Theme, makeStyles, Typography, Grid, CircularProgress, Button } from "@material-ui/core";
 import { OfferItem } from "./OfferItem";
 import { isMobile } from "../platform/platform";
-import { Button } from "semantic-ui-react";
 import { MyOffers } from "./MyOffers";
+import { queryAsPublic } from "../damlHubApi/queryAsPublicParty";
+
+
 
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -31,8 +33,11 @@ export const Offers: React.FC = () => {
   const onPageClick = (name: string) => {
     setPage(name)
   }
+
   const tokenOffers = useStreamQueries(TokenArt.TokenOffer)
   console.log("tokenOffers", tokenOffers);
+  
+
   const offerDisplay = tokenOffers.contracts.map(offer => {
     return (
       <Grid key={offer.contractId} item xs={isMobile() ? 12 : 4}>

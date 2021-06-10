@@ -1,6 +1,6 @@
 import React from "react";
 import { TokenArt } from "@daml.js/daml-social-network";
-import { Card, Theme, makeStyles, Typography, Grid, CircularProgress, LinearProgress } from "@material-ui/core";
+import { Card, Theme, makeStyles, Typography, Grid, LinearProgress } from "@material-ui/core";
 import { OfferItem } from "./OfferItem";
 import { isMobile } from "../platform/platform";
 
@@ -20,6 +20,8 @@ export const PublicOffers: React.FC = () => {
   const classes = useStyles();
   const allPublicContracts = useStreamQueriesAsPublic(TokenArt.TokenOffer);
   console.log('all', allPublicContracts)
+
+
   const offerDisplay = allPublicContracts.contracts.map(offer => {
     return (
       <Grid item xs={isMobile() ? 12 : 4}>

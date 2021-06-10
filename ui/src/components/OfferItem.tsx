@@ -16,6 +16,7 @@ import { TokenArt } from "@daml.js/daml-social-network";
 import { Iou } from "@daml.js/daml-social-network";
 import { ContractId } from "@daml/types";
 import { getPinataImageString } from "../pinataUtils";
+import { exerciseByContractId } from "../damlHubApi/queryAsPublicParty";
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     padding: theme.spacing(1),
@@ -58,32 +59,48 @@ export const OfferItem: React.FC<OfferItemProps> = ({
   const classes = useStyles();
   const ledger = useLedger();
   const username = useParty();
-
+  console.log('image', image)
   const myIous = useStreamQueries(Iou.Iou).contracts;
   const consolidatedIou = myIous?.[0]?.contractId
-  const [base64String, setBase64String] = React.useState("")
 
+  const [base64String, setBase64String] = React.useState("")
+  console.log('consolidatedIou', consolidatedIou)
+  console.log('contractId', contractId);
   
   getPinataImageString(image).then((data) => setBase64String(data.message))
 
-  const onClick = async () => {
+  const exerciseViaAPI = async () => {
+    if(consolidatedIou){
 
+      const result = await exerciseByContractId(contractId, username, consolidatedIou)
+      console.log(result);
+    }
+  }
+
+  const onClick = async () => {
+    console.log('click buy', contractId)
     try {
-      // await ledger.exercise(TokenArt.TokenOffer.AcceptOffer, contractId, {
+      
+      // const contract = await ledger.fetchByKey(TokenArt.TokenOffer, {_1: issuer, _2: owner, _3: image})
+      // console.log('contract', contract)
+      
+        await ledger.exercise(TokenArt.TokenOffer.AcceptOffer, contractId, {
+          acceptingOwner: username,
+          iouCid: consolidatedIou,
+        });
+      
+   
+      // await ledger.exerciseByKey(TokenArt.TokenOffer.AcceptOffer, {_1: issuer, _2: owner, _3: image}, {
       //   acceptingOwner: username,
       //   iouCid: consolidatedIou,
       // });
-      await ledger.exerciseByKey(TokenArt.TokenOffer.AcceptOffer, {_1: issuer, _2: owner, _3: image}, {
-        acceptingOwner: username,
-        iouCid: consolidatedIou,
-      });
     } catch (e) {
       alert("error");
     }
   };
 
   const onCancelClick = async () => {
-
+    console.log('click cancel', contractId)
     try {
       await ledger.exercise(TokenArt.TokenOffer.ArchiveOffer, contractId, {
       });

@@ -49,6 +49,7 @@ export const HomePage: React.FC = () => {
         <Tab className={classes.tabs} label="Market" />
         <Tab className={classes.tabs}label="Transactions" />
 
+
        </Tabs>
         {value === 0 && (<OwnArt/>)}
         {value === 1 &&   (deploymentMode === DeploymentMode.PROD_DABL ? <PublicOffers/> :<Offers/>)}
