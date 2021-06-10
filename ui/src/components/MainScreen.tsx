@@ -3,12 +3,14 @@
 
 import React from "react";
 import { HomePage } from "./HomePage";
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import {
   AppBar,
   Toolbar,
   makeStyles,
   Typography,
-  Button
+  Button,
+  IconButton
 } from "@material-ui/core";
 
 type Props = {
@@ -19,7 +21,8 @@ const useStyles = makeStyles(theme => ({
   offset: theme.mixins.toolbar,
   button: {
     marginLeft: "auto",
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
+    color: 'white'
   },
   text: {
     fontWeight: 'bold'
@@ -36,15 +39,14 @@ export const MainScreen: React.FC<Props> = ({ onLogout }) => {
       <div className={classes.offset} />
       <AppBar position="fixed">
         <Toolbar>
-          <Typography className={classes.text}>Daml Doodle</Typography>
-          <Button
+          <Typography className={classes.text}>Daml NFT Market</Typography>
+          <IconButton
             className={classes.button}
             size="small"
-            variant="contained"
             onClick={onLogout}
           >
-            Logout
-          </Button>
+            <ExitToAppIcon/>
+          </IconButton>
         </Toolbar>
       </AppBar>
       <HomePage />

@@ -1,5 +1,5 @@
 import React from "react";
-import { Theme, makeStyles, Button, InputBase, Card, LinearProgress, Typography } from "@material-ui/core";
+import { Theme, makeStyles, Button, InputBase, Card, LinearProgress, Typography, TextField } from "@material-ui/core";
 import {
   useParty,
   useLedger,
@@ -8,8 +8,14 @@ import Snackbar from '@material-ui/core/Snackbar';
 import clsx from 'clsx';
 import { User, Iou } from "@daml.js/daml-social-network";
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
+import { deploymentMode, DeploymentMode } from '../config';
+import { isMobile } from "../platform/platform";
+
 const pinataSDK = require('@pinata/sdk');
+
 const pinata = pinataSDK('fa9904749cba5c53bb0f', 'fbea9988c9579fb242a4bf95fefb4417e06ef740d1f5f3ae1149105f46c60d2a');
+export const adminParty = 'ledger-party-25de662b-3c2b-4622-86ca-a7759cf97d02'
+// 'ledger-party-33fb400f-c6a8-4cd4-bc57-54f2ad212c39'
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",
@@ -26,7 +32,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: theme.spacing(1)
   },
   writeContainer: {
-    display: "flex"
+    display: "flex",
+    width: '100%'
   },
   dishContainer: {
     display: "flex",
@@ -36,7 +43,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   textField: {
     overflowY: "auto",
     padding: 0,
-    width: "auto"
+    width: "100%"
   },
   button: {
     width: '100%'
@@ -53,11 +60,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     margin: theme.spacing(1, 1, 1, 0),
     borderRadius: theme.shape.borderRadius,
     position: "relative"
-  },
-  tagDishButton: {
-    display: "flex",
-    margin: theme.spacing(0, 1),
-    textTransform: "capitalize"
   },
   divider: {
     margin: theme.spacing(1, 0)
@@ -98,10 +100,26 @@ const useStyles = makeStyles((theme: Theme) => ({
     position: "absolute"
   },
   snackbar: {
-    // width: '100%'
+    width: isMobile() ? '100%' : '50%',
+    backgroundColor: theme.palette.success.main,
+    margin: theme.spacing(1),
+    height: '40px',
+    borderRadius: theme.shape.borderRadius,
+    display: 'flex', 
+    alignItems: 'center'
   },
   displaynone: {
     display: 'none'
+  },
+  disclosure: {
+    margin: theme.spacing(1)
+  },
+  disclosureText: {
+    fontStyle: 'italic'
+  },
+  successText: {
+    color: 'white', 
+    fontWeight: 'bold'
   }
 }));
 
@@ -119,7 +137,6 @@ export const AddArt: React.FC = () => {
   const [file, setFile] = React.useState<File | undefined>(undefined);
   const [isPosting, setIsPosting] = React.useState<boolean>(false);
   const [isOpen, setIsOpen] = React.useState(false);
-  const [isUploadOpen, setUpload] = React.useState(false);
 
   //@ts-ignore
   const handleClose = (event, reason) => {
@@ -137,10 +154,7 @@ export const AddArt: React.FC = () => {
     []
   );
 
-  const onUploadClick = () => {
-    console.log('click')
-    setUpload(true)
-  }
+
 
   const addArt = async () => {
     setIsPosting(true);
@@ -153,8 +167,9 @@ export const AddArt: React.FC = () => {
         royaltyRate: "0.05"
       });
       // create IOU on creation of artwork
+      // TODO remove 
       await ledger.create(Iou.IouIssueRequest, {
-        issuer: 'ledger-party-a20ec465-1e93-4660-a413-29b9d305cb7e',
+        issuer: deploymentMode === DeploymentMode.PROD_DABL ? adminParty : 'digitalAsset',
         requester: username,
         observers: [username]
       })
@@ -178,7 +193,6 @@ export const AddArt: React.FC = () => {
   const loadFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     const reader = new FileReader();
     const image = document.getElementById(`${formIndex}`) as HTMLImageElement;
-
 
     if (image && URL) {
       image.src = URL?.createObjectURL(event?.target?.files?.[0]) || "";
@@ -238,8 +252,6 @@ export const AddArt: React.FC = () => {
           <InputBase
             className={classes.textField}
             placeholder={`Set price, eg "100.0"`}
-            multiline
-            rows={3}
             inputProps={{ "aria-label": "naked" }}
             value={text}
             onChange={onTextChange}
@@ -247,13 +259,18 @@ export const AddArt: React.FC = () => {
             disabled={isPosting}
           />
         </div>
-        <Button disabled={isPosting} className={classes.button} size='small' variant="contained" onClick={addArt}>
+        <Button disabled={isPosting || (!text.length || !imageString.length)} className={classes.button} size='small' variant="contained" onClick={addArt}>
           {isPosting ? "Posting" : "add"}
         </Button>
         {isPosting && <LinearProgress variant='indeterminate' />}
+        <div className={classes.disclosure}>
+          <Typography className={classes.disclosureText}variant='caption' >Disclosure: Images are uploaded to IPFS and will be permanently on the network.</Typography>
+        </div>
 
       </Card>
-      <Snackbar className={classes.snackbar} message='Success!' color='green' open={isOpen} autoHideDuration={2000} onClose={handleClose} />
+      <Snackbar className={classes.snackbar}  message='Success!' open={isOpen} autoHideDuration={3000} onClose={handleClose} >
+          <Typography className={classes.successText}>Success!</Typography>
+        </Snackbar>
     </>
   );
 };

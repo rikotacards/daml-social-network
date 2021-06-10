@@ -1,10 +1,13 @@
 import React from "react";
+import {
+    useParty,
+  useStreamQueries
+} from "@daml/react";
 import { TokenArt } from "@daml.js/daml-social-network";
-import { Card, Theme, makeStyles, Typography, Grid, LinearProgress } from "@material-ui/core";
+import { Card, Theme, makeStyles, Typography, Grid, CircularProgress } from "@material-ui/core";
 import { OfferItem } from "./OfferItem";
 import { isMobile } from "../platform/platform";
 
-import { useStreamQueriesAsPublic } from '@daml/hub-react'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -16,13 +19,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export const PublicOffers: React.FC = () => {
+export const MyOffers: React.FC = () => {
   const classes = useStyles();
-  const allPublicContracts = useStreamQueriesAsPublic(TokenArt.TokenOffer);
-  console.log('all', allPublicContracts)
+  const username = useParty();
 
-
-  const offerDisplay = allPublicContracts.contracts.map(offer => {
+  const tokenOffers = useStreamQueries(TokenArt.TokenOffer, () => [{issuer: username}])
+  const offerDisplay = tokenOffers.contracts.map(offer => {
     return (
       <Grid item xs={isMobile() ? 12 : 4}>
         <OfferItem
@@ -35,12 +37,12 @@ export const PublicOffers: React.FC = () => {
       </Grid>
     );
   });
-  if (allPublicContracts.loading) {
+  if (tokenOffers.loading) {
     return (
-      <LinearProgress variant='indeterminate' />
+      <CircularProgress />
     )
   }
-  if (!allPublicContracts.contracts?.length) {
+  if (!tokenOffers.contracts?.length) {
     return (
       <Card className={classes.card}>
         <Typography>No offers on market</Typography>

@@ -8,10 +8,10 @@ import { AddArt } from "./AddArt";
 import { OwnArt } from "./OwnArt";
 import { Offers } from "./Offers";
 import {makeStyles, Theme, } from '@material-ui/core';
-import { MyPendingIous } from "./MyPendingIous";
 import { Transactions } from "./Transactions";
 import { DeploymentMode, deploymentMode} from '../config';
 import { PublicOffers } from "./PublicOffers";
+import { MyBalance } from "./MyBalance";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -36,7 +36,7 @@ export const HomePage: React.FC = () => {
   };
   return (
     <div className={classes.root}>
-      <MyPendingIous/>
+      <MyBalance/>
       <AddArt/>
       <Tabs
         value={value}
@@ -48,6 +48,7 @@ export const HomePage: React.FC = () => {
         <Tab className={classes.tabs} label="My Art" />
         <Tab className={classes.tabs} label="Market" />
         <Tab className={classes.tabs}label="Transactions" />
+
 
        </Tabs>
         {value === 0 && (<OwnArt/>)}

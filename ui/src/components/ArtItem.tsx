@@ -3,11 +3,14 @@ import {
   useLedger,
 } from "@daml/react";
 import { TokenArt } from "@daml.js/daml-social-network";
-import { Typography, Card, TextField } from "@material-ui/core";
+import { Typography, Card, TextField, LinearProgress, CircularProgress } from "@material-ui/core";
 import { ContractId } from "@daml/types";
 import { makeStyles, Button, Theme } from "@material-ui/core";
 import { getPinataImageString } from "../pinataUtils";
+import { deploymentMode, DeploymentMode } from '../config';
 
+export const publicParty = "public-vqe14zmbblsl30te"
+//  "public-wtcqmdkd3wt3ohp8"
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -19,6 +22,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   text: {
     marginRight: theme.spacing(1)
+  },
+  textBold: {
+    marginRight: theme.spacing(1),
+    fontWeight: 'bold'
   },
   buttonText: {
     display: 'flex',
@@ -45,7 +52,6 @@ interface ArtItemProps {
 export const ArtItem: React.FC<ArtItemProps> = ({
   contractId,
   issuer,
-  owner,
   image,
   issuedAt,
   price
@@ -54,7 +60,8 @@ export const ArtItem: React.FC<ArtItemProps> = ({
   const classes = useStyles();
   const [newPrice, setPrice] = React.useState(price);
   const [base64String, setBase64String] = React.useState("")
- 
+  const [isMakingOffer, setMakingOffer] = React.useState(false);
+
   if (image) {
     getPinataImageString(image).then((data) => setBase64String(data.message))
 
@@ -66,35 +73,37 @@ export const ArtItem: React.FC<ArtItemProps> = ({
 
   const onOfferClick = async () => {
     try {
+      setMakingOffer(true);
       await ledger.exercise(TokenArt.TokenArt.Offer, contractId, {
         // TODO: Remove hardcoded. This is for Daml Hub.
-        reader: "public-wtcqmdkd3wt3ohp8",
+        reader: deploymentMode === DeploymentMode.PROD_DABL ? publicParty : "reader",
         price: newPrice,
         contract: contractId
       });
+      setMakingOffer(false);
     } catch (e) {
       console.log(e)
+      setMakingOffer(false)
       alert(`error`);
     }
   };
   return (
     <Card className={classes.root}>
-      <img className={classes.image} alt='img' src={base64String} />
+      {base64String.length > 0 ? <img className={classes.image} alt='img' src={base64String} /> : <LinearProgress variant='indeterminate' />}
       <div>
-
-        <Typography className={classes.text} variant="caption">creator:</Typography>
+        <Typography className={classes.textBold} variant="caption">Creator:</Typography>
         <Typography className={classes.text} variant="caption">{issuer}</Typography>
       </div>
       <div>
-        <Typography className={classes.text} variant="caption">created on:</Typography>
+        <Typography className={classes.textBold} variant="caption">Created on:</Typography>
         <Typography className={classes.text} variant="caption">{issuedAt}</Typography>
       </div>
       <div>
-        <Typography className={classes.text} variant="caption">price:</Typography>
-        <Typography className={classes.text} variant="caption">{price}</Typography>
+        <Typography className={classes.textBold} variant="caption">Price:</Typography>
+        <Typography className={classes.text} variant="caption">${price}</Typography>
       </div>
       <div className={classes.buttonText}>
-        <Button className={classes.buttonText} style={{ marginRight: '4px' }} variant='contained' onClick={onOfferClick}>Make Offer</Button>
+        <Button className={classes.buttonText} style={{ marginRight: '4px' }} variant='contained' onClick={onOfferClick}>Make Offer{isMakingOffer && <CircularProgress variant='indeterminate' size='small' />}</Button>
         <Typography style={{ marginRight: '4px' }}>@</Typography>
         <TextField className={classes.input} size='small' variant='outlined' onChange={onChange} value={newPrice} />
       </div>
